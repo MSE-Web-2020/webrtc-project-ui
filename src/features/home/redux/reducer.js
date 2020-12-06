@@ -1,6 +1,8 @@
 import initialState from './initialState';
+import { reducer as setMsgReducer } from './setMsg';
 
 const reducers = [
+  setMsgReducer,
 ];
 
 export default function reducer(state = initialState, action) {

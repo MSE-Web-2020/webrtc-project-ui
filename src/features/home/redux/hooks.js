@@ -1,0 +1,1 @@
+export { useSetMsg } from './setMsg';
