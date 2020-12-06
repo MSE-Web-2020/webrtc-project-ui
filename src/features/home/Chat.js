@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, Col, Dropdown, Input, Layout, Menu, Row, Typography } from 'antd';
 import { SkyRTC } from './webrtc/SkyRTC-client';
 import { useSetMsg } from './redux/setMsg';
+import { useSelector } from 'react-redux';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -13,11 +14,10 @@ const rtc = SkyRTC();
 
 export default function Chat() {
 
-
   const [myInput, setMyInput] = useState('');
 
-  const { setMsg, chatMsg } = useSetMsg();
-
+  const { setMsg } = useSetMsg();
+  let chatMsg = useSelector(state => state.home.chatMsg)
 
   useEffect(() => {
     console.log('componentDidMount');
@@ -45,17 +45,12 @@ export default function Chat() {
       console.log('channel', channel);
       console.log('socketId', socketId);
       console.log('message', message);
-      // setMsg(message)
+      setMsg(message)
     });
     //连接WebSocket服务器
     rtc.connect('wss://localhost/wss', window.location.hash.slice(1));
 
-  }, []);
-
-  useEffect(() => {
-
-  });
-
+  }, [setMsg]);
 
   const menu = (
     <Menu>
@@ -103,7 +98,7 @@ export default function Chat() {
                         rtc.broadcast(value);
                         console.log('msg sent', value);
                       }}
-                      style={{ width: '115%' }}
+
                     />
                   </div>
                 </Col>

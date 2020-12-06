@@ -14,7 +14,7 @@ export function setMsg(chatMsg) {
 export function useSetMsg() {
   const dispatch = useDispatch();
   const boundAction = useCallback((...params) => dispatch(setMsg(...params)), [dispatch]);
-  return { setMsg: boundAction, chatMsg: useSelector(state => state.chatMsg) };
+  return { setMsg: boundAction };
 }
 
 export function reducer(state, action) {
