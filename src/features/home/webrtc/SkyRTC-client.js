@@ -95,7 +95,7 @@ export const SkyRTC = function () {
         this.on("_ice_candidate", function (data) {
             var candidate = new nativeRTCIceCandidate(data);
             var pc = that.peerConnections[data.socketId];
-            if (!pc || !pc.remoteDescription.type) console.log("remote not set!")
+            if (!pc || !pc.remoteDescription || !pc.remoteDescription.type) console.log("remote not set!")
             pc.addIceCandidate(candidate);
             that.emit('get_ice_candidate', candidate);
         });
