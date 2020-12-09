@@ -16,12 +16,13 @@ export default function Chat() {
   const videoRef2 = useRef(null);
   const videoRef3 = useRef(null);
   const videoRef4 = useRef(null);
+  const refUseMap = {}
 
   const [myInput, setMyInput] = useState('');
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
-    rtc.connect('wss://localhost/wss', window.location.hash.slice(1));
+    rtc.connect('wss://localhost?username=dongbeiqing', window.location.hash.slice(1));
     rtc.on('connected', () => {
       console.log('websocket connected');
       rtc.createStream({ 'video': true, 'audio': true });
@@ -29,39 +30,65 @@ export default function Chat() {
     rtc.on('stream_created', stream => {
       myVideoRef.current.srcObject = stream;
       myVideoRef.current.play();
-      myVideoRef.current.volume=0.0;
-      console.log('myVideo is setup successfully')
+      myVideoRef.current.volume = 0.0;
+      console.log('myVideo is setup successfully');
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
-    rtc.on('pc_add_stream', (stream, socketId) => {
-      if (videoRef2.current != null && videoRef2.current.srcObject === null) {
-        videoRef2.current.srcObject = stream;
-        videoRef2.current.play();
-        videoRef2.current.volume=0.0;
-      } else if (videoRef3.current != null && videoRef3.current.srcObject === null) {
-        videoRef3.current.srcObject = stream;
-        videoRef3.current.play();
-        videoRef3.current.volume=0.0;
-      } else if (videoRef4.current != null && videoRef4.current.srcObject === null) {
-        videoRef4.current.srcObject = stream;
-        videoRef4.current.play();
-        videoRef4.current.volume=0.0;
-      }
-    });
-    rtc.on('remove_peer', socketId => {
-      //todo
-    });
 
-  }, [])
 
-  useEffect(() =>{
+  }, []);
+
+  useEffect(() => {
     rtc.on('data_channel_message', (channel, socketId, message) => {
       console.log('channel', channel);
       console.log('socketId', socketId);
       console.log('message', message);
-      setMsg(msg + "\n" + socketId + ":" + message);
+      setMsg(msg + '\n' + socketId + ':' + message);
     });
-  }, [msg])
+  }, [msg]);
+
+  useEffect(() => {
+    rtc.on('pc_add_stream', (stream, socketId) => {
+      let item = refUseMap[socketId];
+      if (item != null) {
+        return
+      }
+      if (videoRef2.current != null && videoRef2.current.srcObject === null) {
+        videoRef2.current.srcObject = stream;
+        videoRef2.current.play();
+        videoRef2.current.volume = 0.0;
+        refUseMap[socketId] = 'videoRef2';
+      } else if (videoRef3.current != null && videoRef3.current.srcObject === null) {
+        videoRef3.current.srcObject = stream;
+        videoRef3.current.play();
+        videoRef3.current.volume = 0.0;
+        refUseMap[socketId] = 'videoRef3';
+      } else if (videoRef4.current != null && videoRef4.current.srcObject === null) {
+        videoRef4.current.srcObject = stream;
+        videoRef4.current.play();
+        videoRef4.current.volume = 0.0;
+        refUseMap[socketId] = 'videoRef4';
+      }
+    });
+    rtc.on('remove_peer', socketId => {
+      let item = refUseMap[socketId];
+      if (item != null) {
+        switch (item) {
+          case 'videoRef2':
+            videoRef2.current.srcObject = null
+            break
+          case 'videoRef3':
+            videoRef3.current.srcObject = null
+            break
+          case 'videoRef4':
+            videoRef4.current.srcObject = null
+            break
+          default:
+            break;
+        }
+      }
+    });
+  }, [refUseMap])
 
   const menu = (
     <Menu>
@@ -75,23 +102,23 @@ export default function Chat() {
 
   const showInfo = () => {
 
-  }
+  };
 
   const showEffect = () => {
 
-  }
+  };
 
   const share = () => {
 
-  }
+  };
 
   const chooseFile = () => {
 
-  }
+  };
 
   const uploadFile = () => {
 
-  }
+  };
 
   return (
     <div className="home-chat">
@@ -109,7 +136,7 @@ export default function Chat() {
         <Layout>
           <Content>
             <div className="site-layout-content-left">
-              <video autoPlay ref={myVideoRef} height='100%'/>
+              <video autoPlay ref={myVideoRef} height='100%' />
             </div>
             <div className="site-layout-content-left">
               <div>
@@ -120,32 +147,41 @@ export default function Chat() {
                   <div style={{ marginTop: 5 }}>
                     <Search
                       placeholder="input your text"
-                      allowClear
                       enterButton="Send"
                       size="middle"
                       value={myInput}
                       onChange={e => {
-                        console.log("Input box value update", e.target.value)
+                        console.log('Input box value update', e.target.value);
                         setMyInput(e.target.value);
                       }}
                       onSearch={value => {
-                        setMsg(msg + '\nme:' + value)
+                        setMsg(msg + '\nme:' + value);
                         rtc.broadcast(value);
                         console.log('msg sent', value);
+                        setMyInput('')
                       }}
                     />
                   </div>
                 </Col>
                 <Col span={6}>
-                  <Dropdown.Button overlay={menu} style={{ marginTop: 5, float: 'right' }} size='middle'>More</Dropdown.Button>
+                  <Dropdown.Button overlay={menu} style={{ marginTop: 5, float: 'right' }}
+                                   size='middle'>More</Dropdown.Button>
                 </Col>
               </Row>
             </div>
           </Content>
           <Sider width='400'>
-            <div className="site-layout-content-right"><video autoPlay ref={videoRef2}/></div>
-            <div className="site-layout-content-right"><video autoPlay ref={videoRef3}/></div>
-            <div className="site-layout-content-right"><video autoPlay ref={videoRef4}/></div>
+            <div style={{marginTop: 2}}>
+              <div className="site-layout-content-right">
+                <video autoPlay ref={videoRef2} />
+              </div>
+              <div className="site-layout-content-right">
+                <video autoPlay ref={videoRef3} />
+              </div>
+              <div className="site-layout-content-right">
+                <video autoPlay ref={videoRef4} />
+              </div>
+            </div>
           </Sider>
         </Layout>
       </Layout>
