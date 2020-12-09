@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
-import { Avatar, Col, Dropdown, Input, Layout, Menu, Row, Typography } from 'antd';
+import { Avatar, Col, Dropdown, Input, Layout, Menu, Row, Typography, Modal, Button } from 'antd';
 import { SkyRTC } from './webrtc/SkyRTC-client';
 
 const { Header, Content, Sider } = Layout;
@@ -16,10 +16,11 @@ export default function Chat() {
   const videoRef2 = useRef(null);
   const videoRef3 = useRef(null);
   const videoRef4 = useRef(null);
-  const refUseMap = {}
+  const refUseMap = {};
 
   const [myInput, setMyInput] = useState('');
   const [msg, setMsg] = useState('');
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
     rtc.connect('wss://localhost?username=dongbeiqing', window.location.hash.slice(1));
@@ -51,7 +52,7 @@ export default function Chat() {
     rtc.on('pc_add_stream', (stream, socketId) => {
       let item = refUseMap[socketId];
       if (item != null) {
-        return
+        return;
       }
       if (videoRef2.current != null && videoRef2.current.srcObject === null) {
         videoRef2.current.srcObject = stream;
@@ -75,20 +76,57 @@ export default function Chat() {
       if (item != null) {
         switch (item) {
           case 'videoRef2':
-            videoRef2.current.srcObject = null
-            break
+            videoRef2.current.srcObject = null;
+            break;
           case 'videoRef3':
-            videoRef3.current.srcObject = null
-            break
+            videoRef3.current.srcObject = null;
+            break;
           case 'videoRef4':
-            videoRef4.current.srcObject = null
-            break
+            videoRef4.current.srcObject = null;
+            break;
           default:
             break;
         }
       }
     });
-  }, [refUseMap])
+  }, [refUseMap]);
+
+  useEffect(() => {
+    rtc.on('send_file_accepted',
+      (sendId, socketId, file) => {
+
+      });
+    rtc.on('send_file_refused',
+      (sendId, socketId, file) => {
+
+      });
+    rtc.on('send_file',
+      (sendId, socketId, file) => {
+
+      });
+    rtc.on('sended_file',
+      (sendId, socketId, file) => {
+
+      });
+    rtc.on('send_file_chunk',
+      (sendId, socketId, percent, file) => {
+
+    });
+    rtc.on('receive_file_chunk', (sendId, socketId, fileName, percent)=>{
+
+    });
+    rtc.on('receive_file', (sendId, socketId, name)=>{
+
+    });
+    rtc.on('send_file_error', () => {
+
+    });
+    rtc.on('send_file_error', err=>console.log(err));
+    rtc.on('receive_file_error', err=>console.log(err));
+    rtc.on('receive_file_ask', (sendId, socketId, fileName, fileSize)=>{
+
+    });
+  }, []);
 
   const menu = (
     <Menu>
@@ -101,23 +139,31 @@ export default function Chat() {
   );
 
   const showInfo = () => {
-
+    showModal()
   };
 
   const showEffect = () => {
-
+    showModal()
   };
 
   const share = () => {
-
+    rtc.shareFile('fileIpt');
   };
 
   const chooseFile = () => {
-
+    showModal()
   };
 
   const uploadFile = () => {
+    showModal()
+  };
 
+  const showModal = () => {
+    setConfirmModalVisible(true)
+  };
+
+  const hideModal = () => {
+    setConfirmModalVisible(false)
   };
 
   return (
@@ -146,8 +192,8 @@ export default function Chat() {
                 <Col span={18}>
                   <div style={{ marginTop: 5 }}>
                     <Search
-                      placeholder="input your text"
-                      enterButton="Send"
+                      placeholder="输入文字"
+                      enterButton="发送"
                       size="middle"
                       value={myInput}
                       onChange={e => {
@@ -155,23 +201,25 @@ export default function Chat() {
                         setMyInput(e.target.value);
                       }}
                       onSearch={value => {
+                        if (value === '') {
+                          return;
+                        }
                         setMsg(msg + '\nme:' + value);
                         rtc.broadcast(value);
                         console.log('msg sent', value);
-                        setMyInput('')
+                        setMyInput('');
                       }}
                     />
                   </div>
                 </Col>
                 <Col span={6}>
-                  <Dropdown.Button overlay={menu} style={{ marginTop: 5, float: 'right' }}
-                                   size='middle'>More</Dropdown.Button>
+                  <Dropdown overlay={menu} placement="topLeft" ><Button style={{ marginTop: 5, float: 'right' }}>更多功能</Button></Dropdown>
                 </Col>
               </Row>
             </div>
           </Content>
-          <Sider width='400'>
-            <div style={{marginTop: 2}}>
+          <Sider width='360'>
+            <div style={{ marginTop: 2 }}>
               <div className="site-layout-content-right">
                 <video autoPlay ref={videoRef2} />
               </div>
@@ -185,6 +233,17 @@ export default function Chat() {
           </Sider>
         </Layout>
       </Layout>
+
+      <Modal
+        title="Modal"
+        visible={confirmModalVisible}
+        onOk={hideModal}
+        onCancel={hideModal}
+        okText="确认"
+        cancelText="取消"
+      >
+        <p>敬请期待</p>
+      </Modal>
     </div>
   );
 };
