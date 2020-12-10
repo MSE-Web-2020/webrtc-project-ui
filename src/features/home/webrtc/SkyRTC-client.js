@@ -101,7 +101,7 @@ export const SkyRTC = function () {
         });
         this.on('_new_peer', function (data) {
             that.connections.push(data.socketId);
-            var pc = that.createPeerConnection(data.socketId), i, m;
+            var pc = that.createPeerConnection(data.socketId)//, i, m;
             pc.addStream(that.localMediaStream);
             that.emit('new_peer', data.socketId);
         });
@@ -171,7 +171,7 @@ export const SkyRTC = function () {
     };
     //将本地流添加到所有的PeerConnection实例中
     skyrtc.prototype.addStreams = function () {
-        var i, m, stream, connection;
+        var connection; //i, m, stream;
         for (connection in this.peerConnections) this.peerConnections[connection].addStream(this.localMediaStream);
     };
     // 将流绑定到video标签上用于输出
@@ -199,7 +199,7 @@ export const SkyRTC = function () {
     };
     //接收到Offer类型信令后作为回应返回answer类型信令
     skyrtc.prototype.receiveOffer = function (socketId, sdp) {
-        var pc = this.peerConnections[socketId];
+        //var pc = this.peerConnections[socketId];
         this.sendAnswer(socketId, sdp);
     };
     //发送answer类型信令
@@ -275,7 +275,8 @@ export const SkyRTC = function () {
     };
     //对某一个PeerConnection创建Data channel
     skyrtc.prototype.createDataChannel = function (socketId, label) {
-        var pc, key, channel;
+        var pc, channel;
+        // var key;
         pc = this.peerConnections[socketId];
         socketId||this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without socket id"));
         (pc instanceof PeerConnection)||this.emit("data_channel_create_error", socketId, new Error("attempt to create data channel without peerConnection"));
@@ -324,7 +325,8 @@ export const SkyRTC = function () {
     };
     //向某一单个用户发送文件
     skyrtc.prototype.sendFile = function (dom, socketId) {
-        var that = this, file, reader, fileToSend, sendId;
+        var that = this, file, fileToSend, sendId;
+        // var reader;
         if (typeof dom === 'string') dom = document.getElementById(dom);
         if (!dom) {
             that.emit("send_file_error", new Error("Can not find dom while sending file"), socketId);

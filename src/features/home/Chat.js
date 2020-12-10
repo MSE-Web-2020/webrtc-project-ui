@@ -11,7 +11,7 @@ const { Search } = Input;
 
 var rtc = SkyRTC()
 for (let i in enhance) rtc.prototype[i] = enhance[i]
-rtc = new rtc
+rtc = new rtc()
 
 export default function Chat() {
 
@@ -46,7 +46,7 @@ export default function Chat() {
       console.log('channel', channel);
       console.log('socketId', socketId);
       console.log('message', message);
-      setMsg(msg + '\n' + socketId + ': ' + message);
+      setMsg(`${msg}\n${socketId}: ${message}`);
     });
   }, [msg]);
 
@@ -54,23 +54,17 @@ export default function Chat() {
     rtc.on('pc_add_stream', (stream, socketId) => {
       let item = refUseMap[socketId];
       if (item != null) {
-        return;
+        eval(`${item}.current.play()`)
       }
-      if (videoRef2.current != null && videoRef2.current.srcObject === null) {
-        videoRef2.current.srcObject = stream;
-        videoRef2.current.play();
-        videoRef2.current.volume = 0.0;
-        refUseMap[socketId] = 'videoRef2';
-      } else if (videoRef3.current != null && videoRef3.current.srcObject === null) {
-        videoRef3.current.srcObject = stream;
-        videoRef3.current.play();
-        videoRef3.current.volume = 0.0;
-        refUseMap[socketId] = 'videoRef3';
-      } else if (videoRef4.current != null && videoRef4.current.srcObject === null) {
-        videoRef4.current.srcObject = stream;
-        videoRef4.current.play();
-        videoRef4.current.volume = 0.0;
-        refUseMap[socketId] = 'videoRef4';
+      for (let i of [2, 3, 4]){
+        let video = eval(`videoRef${i}.current`)
+        if (video && !!!video.srcObject){
+          video.srcObject = stream
+          video.play()
+          video.volume = 0.0
+          refUseMap[socketId] = `videoRef${i}`
+          break
+        }
       }
     });
     rtc.on('remove_peer', socketId => {
@@ -98,18 +92,22 @@ export default function Chat() {
     rtc.on('all_mate', message => {
       switch(message.mode){
         case 'text':
-          setMsg(msg + '\n' + '房间推送信息:' + message.data)
+          setMsg(`${msg}\n房间推送信息: ${message.data}`)
           break
         case 'effect':
+          break
+        default:
           break
       }
     });
     rtc.on('all_room', message => {
       switch(message.mode){
         case 'text':
-          setMsg(msg + '\n' + '系统推送信息:' + message.data)
+          setMsg(`${msg}\n系统推送信息: ${message.data}`)
           break
         case 'effect':
+          break
+        default:
           break
       }
     });
@@ -182,7 +180,7 @@ export default function Chat() {
   };
 
   const login = () => {
-    let url = new URL(window.location.href)
+    // let url = new URL(window.location.href)
     window.location.href = '/login.html'
   }
 
