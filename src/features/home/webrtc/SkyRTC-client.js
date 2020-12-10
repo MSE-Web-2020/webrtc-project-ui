@@ -477,5 +477,5 @@ export const SkyRTC = function () {
         var that = this;
         delete that.receiveFiles[sendId];
     };
-    return new skyrtc();
+    return skyrtc
 };

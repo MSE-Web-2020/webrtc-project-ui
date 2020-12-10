@@ -2,13 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { Avatar, Col, Dropdown, Input, Layout, Menu, Row, Typography, Modal, Button } from 'antd';
 import { SkyRTC } from './webrtc/SkyRTC-client';
+import { enhance } from './webrtc/enhance';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Search } = Input;
 
-const rtc = SkyRTC();
+var rtc = SkyRTC()
+for (let i in enhance) rtc.prototype[i] = enhance[i]
+rtc = new rtc
 
 export default function Chat() {
 
@@ -23,7 +26,8 @@ export default function Chat() {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
-    rtc.connect('wss://localhost?username=dongbeiqing', window.location.hash.slice(1));
+    let url = new URL(window.location.href), port = '80';
+    rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
     rtc.on('connected', () => {
       console.log('websocket connected');
       rtc.createStream({ 'video': true, 'audio': true });
@@ -35,8 +39,6 @@ export default function Chat() {
       console.log('myVideo is setup successfully');
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
-
-
   }, []);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function Chat() {
       console.log('channel', channel);
       console.log('socketId', socketId);
       console.log('message', message);
-      setMsg(msg + '\n' + socketId + ':' + message);
+      setMsg(msg + '\n' + socketId + ': ' + message);
     });
   }, [msg]);
 
@@ -92,6 +94,28 @@ export default function Chat() {
   }, [refUseMap]);
 
   useEffect(() => {
+    rtc.on('one_mate', message =>alert(`来自 ${message.src} 的私信：\n${message.data}`));
+    rtc.on('all_mate', message => {
+      switch(message.mode){
+        case 'text':
+          setMsg(msg + '\n' + '房间推送信息:' + message.data)
+          break
+        case 'effect':
+          break
+      }
+    });
+    rtc.on('all_room', message => {
+      switch(message.mode){
+        case 'text':
+          setMsg(msg + '\n' + '系统推送信息:' + message.data)
+          break
+        case 'effect':
+          break
+      }
+    });
+  }, [msg]);
+
+  useEffect(() => {
     rtc.on('send_file_accepted',
       (sendId, socketId, file) => {
 
@@ -135,8 +159,32 @@ export default function Chat() {
       <Menu.Item key="3" onClick={() => share()}>分享</Menu.Item>
       <Menu.Item key="4" onClick={() => chooseFile()}>选择文件</Menu.Item>
       <Menu.Item key="5" onClick={() => uploadFile()}>上传文件</Menu.Item>
+      <Menu.Item key="6" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
+      <Menu.Item key="7" onClick={() => msgSend(2)}>向整个房间发送信息</Menu.Item>
+      <Menu.Item key="8" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
+      <Menu.Item key="9" onClick={() => login()}>人脸登录</Menu.Item>
     </Menu>
   );
+
+  const msgSend = mode => {
+    switch(mode){
+      case 1:
+        rtc.one_mate({dst:'a',data:'一对一私信'})
+        break
+      case 2:
+        rtc.all_mate({mode:'text',data:'向房间成员发送通知'})
+        break
+      case 3:
+        rtc.all_room({mode:'text',data:'向全体成员发送通知'})
+        break
+      default:
+    }
+  };
+
+  const login = () => {
+    let url = new URL(window.location.href)
+    window.location.href = '/login.html'
+  }
 
   const showInfo = () => {
     showModal()
@@ -160,6 +208,7 @@ export default function Chat() {
 
   const showModal = () => {
     setConfirmModalVisible(true)
+
   };
 
   const hideModal = () => {

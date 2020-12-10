@@ -1,0 +1,62 @@
+#content,.webcam,.userinfo,.button,.test {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	justify-content: center
+}
+
+#content,.userinfo {
+	flex-direction: column;
+}
+
+#content {
+	position: absolute;
+	width: 100%;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+#video {
+	border-radius: 50%;
+	display: none;
+	box-sizing: border-box;
+	border: 15px gray double
+}
+
+.userinfo {
+	margin-top: 10%;
+	width: 50%;
+	max-width: 500px;
+	min-width: 300px
+}
+
+.button,.test {
+	width: 100%;
+}
+
+input {
+	width: 100%;
+	text-align: center;
+	height: 40px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	font-size: 25px;
+	font-family: Roboto Bold;
+}
+
+button {
+	width: 48%;
+	border-radius: 5px;
+	height: 40px;
+	margin-bottom: 10px;
+}
+
+#login,#delete {
+	margin-right: 4%;
+}

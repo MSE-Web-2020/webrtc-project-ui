@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户登录</title>
+	<link rel="stylesheet" href="css/login.css">
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+	<div id='content'>
+		<div class='webcam'>
+			<video id="video" autoplay muted></video>
+			<canvas id="overlay"/>
+		</div>
+		<div class='userinfo'>
+			<span>变绿3秒开启识别，点击头像可重新识别</span>
+			<input id='username' placeholder="user">
+			<input id='roomname' placeholder="room">
+			<div class='button'>
+				<button id='login'>登录</button>
+				<button id='register'>注册</button>
+			</div>
+			<div class='test'>
+				<button id='delete'>删除用户</button>
+				<button id='onff'>视频开关</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="js/face-api.min.js"></script>
+<script src="js/login.js"></script>
+</html>
