@@ -52,15 +52,12 @@ export default function Chat() {
 
   useEffect(() => {
     rtc.on('pc_add_stream', (stream, socketId) => {
-      let item = refUseMap[socketId];
-      if (item != null) {
-        eval(`${item}.current.play()`)
-      }
-      for (let i of [2, 3, 4]){
+      for (let i of [2, 3, 4]) {
         let video = eval(`videoRef${i}.current`)
         if (video && !!!video.srcObject){
           video.srcObject = stream
-          video.play()
+          let vp = video.play()
+          if (vp !== undefined) vp.then(() =>video.play()).catch(()=>{})
           video.volume = 0.0
           refUseMap[socketId] = `videoRef${i}`
           break
