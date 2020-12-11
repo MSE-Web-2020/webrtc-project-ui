@@ -33,13 +33,17 @@ export default function Chat() {
       rtc.createStream({ 'video': true, 'audio': true });
     });
     rtc.on('stream_created', stream => {
-      myVideoRef.current.srcObject = stream;
-      myVideoRef.current.play();
-      myVideoRef.current.volume = 0.0;
-      console.log('myVideo is setup successfully');
+        myVideoRef.current.srcObject = stream;
+        myVideoRef.current.play();
+        myVideoRef.current.volume = 0.0;
+        console.log('myVideo is setup successfully');
+    });
+    rtc.on('stream_changed', id => {
+      eval(`${refUseMap[id]}.current.srcObject = null`)
+      rtc.getThis().createPeerConnection(id)
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
-  }, []);
+  }, [refUseMap]);
 
   useEffect(() => {
     rtc.on('data_channel_message', (channel, socketId, message) => {
@@ -57,7 +61,7 @@ export default function Chat() {
         if (video && !!!video.srcObject){
           video.srcObject = stream
           let vp = video.play()
-          if (vp !== undefined) vp.then(() =>video.play()).catch(()=>{})
+          if (vp !== undefined) vp.then(()=>video.play()).catch(()=>{})
           video.volume = 0.0
           refUseMap[socketId] = `videoRef${i}`
           break
@@ -158,6 +162,8 @@ export default function Chat() {
       <Menu.Item key="7" onClick={() => msgSend(2)}>向整个房间发送信息</Menu.Item>
       <Menu.Item key="8" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
       <Menu.Item key="9" onClick={() => login()}>人脸登录</Menu.Item>
+      <Menu.Item key="10" onClick={() => stream_change(true)}>共享桌面</Menu.Item>
+      <Menu.Item key="11" onClick={() => stream_change(false)}>共享摄像头</Menu.Item>
     </Menu>
   );
 
@@ -177,8 +183,12 @@ export default function Chat() {
   };
 
   const login = () => {
-    // let url = new URL(window.location.href)
     window.location.href = '/login.html'
+  }
+
+  const stream_change = e => {
+    let options = {video: true, audio: true }
+    rtc.stream_change(options, e)
   }
 
   const showInfo = () => {

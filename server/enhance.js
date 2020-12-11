@@ -8,13 +8,20 @@ module.exports.listen = function(WebRTC, rtc, errCb){
         }
     }
     rtc.prototype.del_mate = function(data, socket){
-        // let curRoom = this.rooms[socket.room]
-        // for (i = curRoom.length; i--;) {
-        //     curRoom[i].send(JSON.stringify({"eventName": "_remove_peer","data": {"socketId": data}}), errCb)
-        // }
-        // that.removeSocket(socket)
-        // this.emit('remove_peer', data, this)
+        let curRoom = this.rooms[socket.room]
+        for (i = curRoom.length; i--;) {
+            curRoom[i].send(JSON.stringify({"eventName": "remove_peer","data": data}), errCb)
+        }
     }
+    rtc.prototype.stream_change = function(data, socket){
+        let curRoom = this.rooms[socket.room]
+        for (i = curRoom.length; i--;) {
+            if (curRoom[i].id == socket.id) continue
+            curRoom[i].send(JSON.stringify({"eventName": "stream_changed","data": socket.id}), errCb)
+        }
+    }
+
+
 
     WebRTC.rtc = new rtc()
     var errorCb = errCb(WebRTC.rtc)
@@ -39,10 +46,14 @@ module.exports.listen = function(WebRTC, rtc, errCb){
         WebRTC.rtc.del_mate(data, socket)
     })
 
+    WebRTC.rtc.on('stream_change', (data,socket)=>{
+        WebRTC.rtc.stream_change(data, socket)
+    })
 
     //监听日志
     WebRTC.on('connection', function(socket, req){
         socket.id = require("querystring").parse(req.url.split("?")[1]).username
+        // this.rooms[socket.room] == 4
         !!socket.id&&this.rtc.init(socket)
     })
     WebRTC.rtc.on('new_connect', socket=>console.log('创建新连接'))
