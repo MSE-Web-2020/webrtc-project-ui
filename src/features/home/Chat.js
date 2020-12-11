@@ -32,6 +32,9 @@ export default function Chat() {
       console.log('websocket connected');
       rtc.createStream({ 'video': true, 'audio': true });
     });
+    rtc.on('not_login', () => {
+        login()
+    });
     rtc.on('stream_created', stream => {
         myVideoRef.current.srcObject = stream;
         myVideoRef.current.play();
@@ -40,7 +43,7 @@ export default function Chat() {
     });
     rtc.on('stream_changed', id => {
       eval(`${refUseMap[id]}.current.srcObject = null`)
-      rtc.getThis().createPeerConnection(id)
+      rtc.createPeerConnection(id)
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
   }, [refUseMap]);
@@ -186,9 +189,17 @@ export default function Chat() {
     window.location.href = '/login.html'
   }
 
-  const stream_change = e => {
-    let options = {video: true, audio: true }
-    rtc.stream_change(options, e)
+  const stream_change = mode => {
+    let success = stream => {
+        rtc.localMediaStream = stream
+        rtc.emit("stream_created", stream)
+        rtc.socket.send(JSON.stringify({eventName:"stream_change"}))
+        rtc.emit('ready')
+    },
+    error = e => console.log(e),
+    options = {video: true, audio: true }
+    mode?navigator.mediaDevices.getDisplayMedia(options).then(success).catch(error)
+        :navigator.mediaDevices.getUserMedia(options).then(success).catch(error)
   }
 
   const showInfo = () => {

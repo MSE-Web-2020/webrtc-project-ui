@@ -53,8 +53,10 @@ module.exports.listen = function(WebRTC, rtc, errCb){
     //监听日志
     WebRTC.on('connection', function(socket, req){
         socket.id = require("querystring").parse(req.url.split("?")[1]).username
-        // this.rooms[socket.room] == 4
-        !!socket.id&&this.rtc.init(socket)
+        // if(this.rooms[socket.room] == 4)
+        !!socket.id
+            ?this.rtc.init(socket)
+            :socket.send(JSON.stringify({"eventName": "not_login"}), errCb)
     })
     WebRTC.rtc.on('new_connect', socket=>console.log('创建新连接'))
     WebRTC.rtc.on('remove_peer', socketId=>console.log(socketId + "用户离开"))
