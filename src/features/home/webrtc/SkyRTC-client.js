@@ -5,11 +5,14 @@ export const SkyRTC = function () {
     let nativeRTCIceCandidate = (window.mozRTCIceCandidate||window.RTCIceCandidate);
     let nativeRTCSessionDescription = (window.mozRTCSessionDescription||window.RTCSessionDescription);
     const iceServer = {"iceServers": [
-            {"url": "stun:stun.l.google.com:19302"},
-            {"url": "stun:global.stun.twilio.com:3478"},
-            {"url": "turn:global.stun.twilio.com:3478",
-             "username": "79fdd6b3c57147c5cc44944344c69d85624b63ec30624b8674ddc67b145e3f3c",
-             "credential": "xjfTOLkVmDtvFDrDKvpacXU7YofAwPg6P6TXKiztVGw"}]};
+        {"url": "stun:stun.l.google.com:19302"},
+        {"url": "stun:global.stun.twilio.com:3478"},
+        {"url": "turn:global.stun.twilio.com:3478",
+         "username": "79fdd6b3c57147c5cc44944344c69d85624b63ec30624b8674ddc67b145e3f3c",
+         "credential": "xjfTOLkVmDtvFDrDKvpacXU7YofAwPg6P6TXKiztVGw"}
+        // {"url": "stun:april8.xyz:82"},
+        // {"url": "turn:april8.xyz:82","username":"olrearn","credential":"9548"}
+    ]};
     let packetSize = 1000;
     /*事件处理器*/
     function EventEmitter() {this.events = {}}

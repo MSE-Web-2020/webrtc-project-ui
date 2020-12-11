@@ -41,12 +41,8 @@ export default function Chat() {
         myVideoRef.current.volume = 0.0;
         console.log('myVideo is setup successfully');
     });
-    rtc.on('stream_changed', id => {
-      eval(`${refUseMap[id]}.current.srcObject = null`)
-      rtc.createPeerConnection(id)
-    });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
-  }, [refUseMap]);
+  }, []);
 
   useEffect(() => {
     rtc.on('data_channel_message', (channel, socketId, message) => {
@@ -54,6 +50,29 @@ export default function Chat() {
       console.log('socketId', socketId);
       console.log('message', message);
       setMsg(`${msg}\n${socketId}: ${message}`);
+    });
+    rtc.on('one_mate', message =>alert(`来自 ${message.src} 的私信：\n${message.data}`));
+    rtc.on('all_mate', message => {
+      switch(message.mode){
+        case 'text':
+          setMsg(`${msg}\n房间推送信息: ${message.data}`)
+          break
+        case 'effect':
+          break
+        default:
+          break
+      }
+    });
+    rtc.on('all_room', message => {
+      switch(message.mode){
+        case 'text':
+          setMsg(`${msg}\n系统推送信息: ${message.data}`)
+          break
+        case 'effect':
+          break
+        default:
+          break
+      }
     });
   }, [msg]);
 
@@ -89,33 +108,11 @@ export default function Chat() {
         }
       }
     });
+    rtc.on('stream_changed', id => {
+      eval(`${refUseMap[id]}.current.srcObject = null`)
+      rtc.createPeerConnection(id)
+    });
   }, [refUseMap]);
-
-  useEffect(() => {
-    rtc.on('one_mate', message =>alert(`来自 ${message.src} 的私信：\n${message.data}`));
-    rtc.on('all_mate', message => {
-      switch(message.mode){
-        case 'text':
-          setMsg(`${msg}\n房间推送信息: ${message.data}`)
-          break
-        case 'effect':
-          break
-        default:
-          break
-      }
-    });
-    rtc.on('all_room', message => {
-      switch(message.mode){
-        case 'text':
-          setMsg(`${msg}\n系统推送信息: ${message.data}`)
-          break
-        case 'effect':
-          break
-        default:
-          break
-      }
-    });
-  }, [msg]);
 
   useEffect(() => {
     rtc.on('send_file_accepted',

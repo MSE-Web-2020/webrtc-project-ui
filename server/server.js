@@ -2,11 +2,11 @@ const path = require("path")
 const fs = require('fs')
 const ws = require('ws').Server
 const server = require('https').createServer({
-    key:fs.readFileSync(path.join(__dirname,'../public/cert','ssl.key')),
-    cert:fs.readFileSync(path.join(__dirname,'../public/cert','ssl.crt'))
+    key:fs.readFileSync(path.join(__dirname,'../ssl.key')),
+    cert:fs.readFileSync(path.join(__dirname,'../ssl.crt'))
 })
 const host = '0.0.0.0'
-const port = 80
+const port = 443
 
 let errorCb = rtc =>{return err=>err&&rtc.emit("error", err)};
 function WebRTC(){
