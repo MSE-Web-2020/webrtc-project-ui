@@ -10,9 +10,11 @@ see https://classic.yarnpkg.com/zh-Hans/docs/install/
 ### install dependencies
 run `yarn install`
 ### run locally:
-run `yarn start`
-### access:
-http://localhost:3030
+start backend service first, and trust its certs
+
+run `yarn start` to start frontend
+### access: (certs must be trusted!)
+https://localhost:3030
 
 ### production build
 run `yarn build`

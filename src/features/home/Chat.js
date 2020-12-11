@@ -26,7 +26,7 @@ export default function Chat() {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
-    let url = new URL(window.location.href), port = '80';
+    let url = new URL(window.location.href), port = '443';
     rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
     rtc.on('connected', () => {
       console.log('websocket connected');
