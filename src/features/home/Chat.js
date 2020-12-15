@@ -391,6 +391,16 @@ export default function Chat() {
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                   </Row>
+                  <Row>
+                    <Col span={12}>
+                      <Button key="12" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Button>
+                      <Button key="13" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Button>
+                    </Col>
+                    <Col span={12}>
+                      <Button key="14" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Button>
+                      <Button key="15" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Button>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </div>
