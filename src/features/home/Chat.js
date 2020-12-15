@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
-import { Avatar, Col, Dropdown, Input, Layout, Menu, Row, Typography, Modal, Button } from 'antd';
+import { Avatar, Button, Col, Input, Layout, Modal, Row, Typography, Upload } from 'antd';
 import { SkyRTC } from './webrtc/SkyRTC-client';
 import { enhance } from './webrtc/enhance';
 
@@ -9,14 +9,14 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const { Search } = Input;
 
-var n1=1;
-var n2=1;
-var n3=1;
-var n4=1;
+var n1 = 1;
+var n2 = 1;
+var n3 = 1;
+var n4 = 1;
 
-var rtc = SkyRTC()
-for (let i in enhance) rtc.prototype[i] = enhance[i]
-rtc = new rtc()
+var rtc = SkyRTC();
+for (let i in enhance) rtc.prototype[i] = enhance[i];
+rtc = new rtc();
 
 export default function Chat() {
 
@@ -29,6 +29,11 @@ export default function Chat() {
   const [myInput, setMyInput] = useState('');
   const [msg, setMsg] = useState('');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [confirmFileModalVisible, setConfirmFileModalVisible] = useState(false);
+  const [fileModalMessage, setFileModalMessage] = useState('');
+  const [fileSendId, setFileSendId] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
     let url = new URL(window.location.href), port = '443';
@@ -38,13 +43,13 @@ export default function Chat() {
       rtc.createStream({ 'video': true, 'audio': true });
     });
     rtc.on('not_login', () => {
-        login()
+      login();
     });
     rtc.on('stream_created', stream => {
-        myVideoRef.current.srcObject = stream;
-        myVideoRef.current.play();
-        myVideoRef.current.volume = 0.0;
-        console.log('myVideo is setup successfully');
+      myVideoRef.current.srcObject = stream;
+      myVideoRef.current.play();
+      myVideoRef.current.volume = 0.0;
+      console.log('myVideo is setup successfully');
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
   }, []);
@@ -56,27 +61,27 @@ export default function Chat() {
       console.log('message', message);
       setMsg(`${msg}\n${socketId}: ${message}`);
     });
-    rtc.on('one_mate', message =>alert(`来自 ${message.src} 的私信：\n${message.data}`));
+    rtc.on('one_mate', message => alert(`来自 ${message.src} 的私信：\n${message.data}`));
     rtc.on('all_mate', message => {
-      switch(message.mode){
+      switch (message.mode) {
         case 'text':
-          setMsg(`${msg}\n房间推送信息: ${message.data}`)
-          break
+          setMsg(`${msg}\n房间推送信息: ${message.data}`);
+          break;
         case 'effect':
-          break
+          break;
         default:
-          break
+          break;
       }
     });
     rtc.on('all_room', message => {
-      switch(message.mode){
+      switch (message.mode) {
         case 'text':
-          setMsg(`${msg}\n系统推送信息: ${message.data}`)
-          break
+          setMsg(`${msg}\n系统推送信息: ${message.data}`);
+          break;
         case 'effect':
-          break
+          break;
         default:
-          break
+          break;
       }
     });
   }, [msg]);
@@ -84,14 +89,15 @@ export default function Chat() {
   useEffect(() => {
     rtc.on('pc_add_stream', (stream, socketId) => {
       for (let i of [2, 3, 4]) {
-        let video = eval(`videoRef${i}.current`)
-        if (video && !!!video.srcObject){
-          video.srcObject = stream
-          let vp = video.play()
-          if (vp !== undefined) vp.then(()=>video.play()).catch(()=>{})
-          video.volume = 0.0
-          refUseMap[socketId] = `videoRef${i}`
-          break
+        let video = eval(`videoRef${i}.current`);
+        if (video && !!!video.srcObject) {
+          video.srcObject = stream;
+          let vp = video.play();
+          if (vp !== undefined) vp.then(() => video.play()).catch(() => {
+          });
+          video.volume = 0.0;
+          refUseMap[socketId] = `videoRef${i}`;
+          break;
         }
       }
     });
@@ -114,8 +120,8 @@ export default function Chat() {
       }
     });
     rtc.on('stream_changed', id => {
-      eval(`${refUseMap[id]}.current.srcObject = null`)
-      rtc.createPeerConnection(id)
+      eval(`${refUseMap[id]}.current.srcObject = null`);
+      rtc.createPeerConnection(id);
     });
   }, [refUseMap]);
 
@@ -139,165 +145,171 @@ export default function Chat() {
     rtc.on('send_file_chunk',
       (sendId, socketId, percent, file) => {
 
-    });
-    rtc.on('receive_file_chunk', (sendId, socketId, fileName, percent)=>{
+      });
+    rtc.on('receive_file_chunk', (sendId, socketId, fileName, percent) => {
 
     });
-    rtc.on('receive_file', (sendId, socketId, name)=>{
+    rtc.on('receive_file', (sendId, socketId, name) => {
 
     });
     rtc.on('send_file_error', () => {
 
     });
-    rtc.on('send_file_error', err=>console.log(err));
-    rtc.on('receive_file_error', err=>console.log(err));
-    rtc.on('receive_file_ask', (sendId, socketId, fileName, fileSize)=>{
-
+    rtc.on('send_file_error', err => console.log(err));
+    rtc.on('receive_file_error', err => console.log(err));
+    rtc.on('receive_file_ask', (sendId, socketId, fileName, fileSize) => {
+      showFileModal();
+      setFileModalMessage(`${socketId}用户想要给你传送${fileName}文件，大小${fileSize}KB,是否接受？`);
+      setFileSendId(sendId);
     });
   }, []);
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="1" onClick={() => showInfo()}>用户和聊天室信息</Menu.Item>
-      <Menu.Item key="2" onClick={() => showEffect()}>特效互动</Menu.Item>
-      <Menu.Item key="3" onClick={() => share()}>分享</Menu.Item>
-      <Menu.Item key="4" onClick={() => chooseFile()}>选择文件</Menu.Item>
-      <Menu.Item key="5" onClick={() => uploadFile()}>上传文件</Menu.Item>
-      <Menu.Item key="6" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
-      <Menu.Item key="7" onClick={() => msgSend(2)}>向整个房间发送信息</Menu.Item>
-      <Menu.Item key="8" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
-      <Menu.Item key="9" onClick={() => login()}>人脸登录</Menu.Item>
-      <Menu.Item key="10" onClick={() => stream_change(true)}>共享桌面</Menu.Item>
-      <Menu.Item key="11" onClick={() => stream_change(false)}>共享摄像头</Menu.Item>
-	  <Menu.Item key="12" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Menu.Item>
-      <Menu.Item key="12" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Menu.Item>
-      <Menu.Item key="12" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Menu.Item>
-      <Menu.Item key="12" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Menu.Item>
-    </Menu>
-  );
-
   const msgSend = mode => {
-    switch(mode){
+    switch (mode) {
       case 1:
-        rtc.one_mate({dst:'a',data:'一对一私信'})
-        break
+        rtc.one_mate({ dst: 'a', data: '一对一私信' });
+        break;
       case 2:
-        rtc.all_mate({mode:'text',data:'向房间成员发送通知'})
-        break
+        rtc.all_mate({ mode: 'text', data: '向房间成员发送通知' });
+        break;
       case 3:
-        rtc.all_room({mode:'text',data:'向全体成员发送通知'})
-        break
+        rtc.all_room({ mode: 'text', data: '向全体成员发送通知' });
+        break;
       default:
     }
   };
 
   const login = () => {
-    window.location.href = '/login.html'
-  }
+    window.location.href = '/login.html';
+  };
 
   const stream_change = mode => {
     let success = stream => {
-        rtc.localMediaStream = stream
-        rtc.emit("stream_created", stream)
-        rtc.socket.send(JSON.stringify({eventName:"stream_change"}))
-        rtc.emit('ready')
-    },
-    error = e => console.log(e),
-    options = {video: true, audio: true }
-    mode?navigator.mediaDevices.getDisplayMedia(options).then(success).catch(error)
-        :navigator.mediaDevices.getUserMedia(options).then(success).catch(error)
-  }
+        rtc.localMediaStream = stream;
+        rtc.emit('stream_created', stream);
+        rtc.socket.send(JSON.stringify({ eventName: 'stream_change' }));
+        rtc.emit('ready');
+      },
+      error = e => console.log(e),
+      options = { video: true, audio: true };
+    mode ? navigator.mediaDevices.getDisplayMedia(options).then(success).catch(error)
+      : navigator.mediaDevices.getUserMedia(options).then(success).catch(error);
+  };
 
 ////////////////////// HWL //////////////////////////////
- var mediaRecorder
- var recorderFile
+  var mediaRecorder;
+  var recorderFile;
   const record_oneVideo = mode => {
-    switch(mode){
+    switch (mode) {
       case 1:
-        let buffer = []
+        let buffer = [];
         mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
-        mediaRecorder.ondataavailable = e=>buffer.push(e.data)
-        mediaRecorder.onstop = e=>{
-          recorderFile = new Blob(buffer, {'type':'video/mp4'})
-          buffer = []
-          alert("录制成功!")
-        }
+        mediaRecorder.ondataavailable = e => buffer.push(e.data);
+        mediaRecorder.onstop = e => {
+          recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+          buffer = [];
+          alert('录制成功!');
+        };
         mediaRecorder.start();
-          n1++;
-        break
+        n1++;
+        break;
       case 2:
         stop_record_oneVideo();
         n1--;
-        break
+        break;
       default:
     }
-  }
+  };
   const stop_record_oneVideo = () => {
-    mediaRecorder.stop()
-    myVideoRef.current.css('border',"3px solid black")
-    save_record_oneVideo()
-  }
+    mediaRecorder.stop();
+    myVideoRef.current.css('border', '3px solid black');
+    save_record_oneVideo();
+  };
   const save_record_oneVideo = () => {
     alert('即将保存当前录制myVideo窗口内容...');
     var file = new File([recorderFile], 'MSE-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
-      type: 'video/mp4'
+      type: 'video/mp4',
     });
 
     // $('<a>').attr({
     //   'href':window.URL.createObjectURL(recorderFile),
     //   'download':`MSE-${(new Date).toISOString().replace(/:|\./g,'-')}.mp4`,
     // }).appendTo('body').bind('click',function(){this.click()}).click().remove()
-  }
+  };
 
   const record_twoVideo = mode => {
-    
-  }
+
+  };
   const stop_record_twoVideo = () => {
-  
-  }
+
+  };
 
   const record_threeVideo = mode => {
-    
-  }
+
+  };
   const stop_record_threeVideo = () => {
-  
-  }
+
+  };
 
   const record_fourVideo = mode => {
-    
-  }
+
+  };
   const stop_record_fourVideo = () => {
-  
-  }
+
+  };
 //////////////////////// END HWL ///////////////////////////////////
 
   const showInfo = () => {
-    showModal()
+    showModal();
   };
 
   const showEffect = () => {
-    showModal()
+    showModal();
   };
 
   const share = () => {
-    rtc.shareFile('fileIpt');
-  };
 
-  const chooseFile = () => {
-    showModal()
   };
 
   const uploadFile = () => {
-    showModal()
+    console.log('Upload', fileList);
+    rtc.shareFile(fileList);
   };
 
   const showModal = () => {
-    setConfirmModalVisible(true)
-
+    setConfirmModalVisible(true);
   };
 
   const hideModal = () => {
-    setConfirmModalVisible(false)
+    setConfirmModalVisible(false);
+  };
+
+  const showFileModal = () => {
+    setConfirmFileModalVisible(true);
+  };
+
+  const hideFileModal = () => {
+    setConfirmFileModalVisible(false);
+    setFileSendId(null);
+  };
+
+  const confirmToReceiveFile = () => {
+    rtc.sendFileAccept(fileSendId);
+    setConfirmFileModalVisible(false);
+  };
+
+  const fileButtonProps = {
+    onRemove: file => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: file => {
+      setFileList([...fileList, file]);
+      return false;
+    },
+    fileList,
   };
 
   return (
@@ -319,11 +331,11 @@ export default function Chat() {
               <video autoPlay ref={myVideoRef} height='100%' />
             </div>
             <div className="site-layout-content-left">
-              <div>
-                <TextArea readOnly value={msg} />
-              </div>
               <Row>
                 <Col span={18}>
+                  <div>
+                    <TextArea readOnly value={msg} />
+                  </div>
                   <div style={{ marginTop: 5 }}>
                     <Search
                       placeholder="输入文字"
@@ -346,8 +358,39 @@ export default function Chat() {
                     />
                   </div>
                 </Col>
-                <Col span={6}>
-                  <Dropdown overlay={menu} placement="topLeft" ><Button style={{ marginTop: 5, float: 'right' }}>更多功能</Button></Dropdown>
+                <Col span={6} id="button-list">
+                  <Row>
+                    <Col span={24}><Button onClick={() => showInfo()}>用户和聊天室信息</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={12}><Upload {...fileButtonProps}>
+                      <Button>选择文件</Button>
+                    </Upload></Col>
+                    <Col span={12}><Button onClick={() => uploadFile()}>上传文件</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={12}><Button onClick={() => share()}>分享</Button></Col>
+                    <Col span={12}><Button onClick={() => showEffect()}>特效互动</Button></Col>
+                  </Row>
+                  <Row>
+                  </Row>
+                  <Row>
+                    <Col span={24}><Button onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}><Button onClick={() => msgSend(2)}>向整个房间发送信息</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}><Button onClick={() => msgSend(3)}>向所有房间发送信息</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={12}><Button onClick={() => login()}>人脸登录</Button></Col>
+                    <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
+                  </Row>
+                  <Row>
+                    <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
+                    <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
+                  </Row>
                 </Col>
               </Row>
             </div>
@@ -364,7 +407,7 @@ export default function Chat() {
                 <video autoPlay ref={videoRef4} />
               </div>
             </div>
-          </Sider>
+          </Sider>;
         </Layout>
       </Layout>
 
@@ -373,11 +416,21 @@ export default function Chat() {
         visible={confirmModalVisible}
         onOk={hideModal}
         onCancel={hideModal}
+        okText="接收"
+        cancelText="拒绝"
+      >
+        <p>敬请期待</p>
+      </Modal>;
+      <Modal
+        title="Modal"
+        visible={confirmFileModalVisible}
+        onOk={confirmToReceiveFile}
+        onCancel={hideFileModal}
         okText="确认"
         cancelText="取消"
       >
-        <p>敬请期待</p>
-      </Modal>
+        <p>{fileModalMessage}</p>
+      </Modal>;
     </div>
   );
 };
