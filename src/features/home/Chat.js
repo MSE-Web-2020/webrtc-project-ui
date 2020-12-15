@@ -9,6 +9,11 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const { Search } = Input;
 
+var n1=1;
+var n2=1;
+var n3=1;
+var n4=1;
+
 var rtc = SkyRTC()
 for (let i in enhance) rtc.prototype[i] = enhance[i]
 rtc = new rtc()
@@ -164,6 +169,10 @@ export default function Chat() {
       <Menu.Item key="9" onClick={() => login()}>人脸登录</Menu.Item>
       <Menu.Item key="10" onClick={() => stream_change(true)}>共享桌面</Menu.Item>
       <Menu.Item key="11" onClick={() => stream_change(false)}>共享摄像头</Menu.Item>
+	  <Menu.Item key="12" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Menu.Item>
+      <Menu.Item key="12" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Menu.Item>
+      <Menu.Item key="12" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Menu.Item>
+      <Menu.Item key="12" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Menu.Item>
     </Menu>
   );
 
@@ -198,6 +207,69 @@ export default function Chat() {
     mode?navigator.mediaDevices.getDisplayMedia(options).then(success).catch(error)
         :navigator.mediaDevices.getUserMedia(options).then(success).catch(error)
   }
+
+////////////////////// HWL //////////////////////////////
+ var mediaRecorder
+ var recorderFile
+  const record_oneVideo = mode => {
+    switch(mode){
+      case 1:
+        let buffer = []
+        mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
+        mediaRecorder.ondataavailable = e=>buffer.push(e.data)
+        mediaRecorder.onstop = e=>{
+          recorderFile = new Blob(buffer, {'type':'video/mp4'})
+          buffer = []
+          alert("录制成功!")
+        }
+        mediaRecorder.start();
+          n1++;
+        break
+      case 2:
+        stop_record_oneVideo();
+        n1--;
+        break
+      default:
+    }
+  }
+  const stop_record_oneVideo = () => {
+    mediaRecorder.stop()
+    myVideoRef.current.css('border',"3px solid black")
+    save_record_oneVideo()
+  }
+  const save_record_oneVideo = () => {
+    alert('即将保存当前录制myVideo窗口内容...');
+    var file = new File([recorderFile], 'MSE-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
+      type: 'video/mp4'
+    });
+
+    // $('<a>').attr({
+    //   'href':window.URL.createObjectURL(recorderFile),
+    //   'download':`MSE-${(new Date).toISOString().replace(/:|\./g,'-')}.mp4`,
+    // }).appendTo('body').bind('click',function(){this.click()}).click().remove()
+  }
+
+  const record_twoVideo = mode => {
+    
+  }
+  const stop_record_twoVideo = () => {
+  
+  }
+
+  const record_threeVideo = mode => {
+    
+  }
+  const stop_record_threeVideo = () => {
+  
+  }
+
+  const record_fourVideo = mode => {
+    
+  }
+  const stop_record_fourVideo = () => {
+  
+  }
+//////////////////////// END HWL ///////////////////////////////////
 
   const showInfo = () => {
     showModal()
