@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
-import { Avatar, Button, Col, Input, Layout, Modal, Row, Typography, Upload } from 'antd';
+import { Avatar, Button, Col, Input, Layout, Modal, Row, Typography, Upload, Dropdown, Menu } from 'antd';
 import { SkyRTC } from './webrtc/SkyRTC-client';
 import { enhance } from './webrtc/enhance';
+import { UpOutlined, PoweroffOutlined } from '@ant-design/icons';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -17,6 +18,8 @@ var n4 = 1;
 var rtc = SkyRTC();
 for (let i in enhance) rtc.prototype[i] = enhance[i];
 rtc = new rtc();
+let mediaRecorder;
+let recorderFile;
 
 export default function Chat() {
 
@@ -30,10 +33,13 @@ export default function Chat() {
   const [msg, setMsg] = useState('');
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [confirmFileModalVisible, setConfirmFileModalVisible] = useState(false);
+  const [recordModalVisible, setRecordModalVisible] = useState(false);
   const [fileModalMessage, setFileModalMessage] = useState('');
   const [fileSendId, setFileSendId] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recorded, setRecorded] = useState(false);
   const [fileList, setFileList] = useState([]);
+
 
   useEffect(() => {
     let url = new URL(window.location.href), port = '443';
@@ -197,8 +203,6 @@ export default function Chat() {
   };
 
 ////////////////////// HWL //////////////////////////////
-  var mediaRecorder;
-  var recorderFile;
   const record_oneVideo = mode => {
     switch (mode) {
       case 1:
@@ -268,7 +272,7 @@ export default function Chat() {
   };
 
   const share = () => {
-
+    showModal();
   };
 
   const uploadFile = () => {
@@ -298,6 +302,35 @@ export default function Chat() {
     setConfirmFileModalVisible(false);
   };
 
+  const showRecordModal = (visible) => {
+    setRecordModalVisible(visible);
+  };
+
+  const record = () => {
+    setRecording(true);
+    let buffer = [];
+    mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
+    mediaRecorder.ondataavailable = e => buffer.push(e.data);
+    mediaRecorder.onstop = e => {
+      recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+      buffer = [];
+      console.log('录制成功!');
+      setRecorded(true);
+    };
+    mediaRecorder.start();
+  };
+
+  const stopRecording = () => {
+    setRecording(false);
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+    }
+  };
+
+  const saveRecord = () => {
+    showRecordModal(true);
+  };
+
   const fileButtonProps = {
     onRemove: file => {
       const index = fileList.indexOf(file);
@@ -311,6 +344,18 @@ export default function Chat() {
     },
     fileList,
   };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Menu.Item>
+      <Menu.Item key="2" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Menu.Item>
+      <Menu.Item key="3" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Menu.Item>
+      <Menu.Item key="4" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Menu.Item>
+      <Menu.Item key="5" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
+      <Menu.Item key="6" onClick={() => msgSend(2)}>向整个房间发送信息</Menu.Item>
+      <Menu.Item key="7" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
+    </Menu>
+  );
 
   return (
     <div className="home-chat">
@@ -361,44 +406,22 @@ export default function Chat() {
                 <Col span={6} id="button-list">
                   <Row>
                     <Col span={24}><Button onClick={() => showInfo()}>用户和聊天室信息</Button></Col>
-                  </Row>
-                  <Row>
-                    <Col span={12}><Upload {...fileButtonProps}>
-                      <Button>选择文件</Button>
-                    </Upload></Col>
+                    <Col span={12}><Upload {...fileButtonProps}><Button>选择文件</Button></Upload></Col>
                     <Col span={12}><Button onClick={() => uploadFile()}>上传文件</Button></Col>
-                  </Row>
-                  <Row>
                     <Col span={12}><Button onClick={() => share()}>分享</Button></Col>
                     <Col span={12}><Button onClick={() => showEffect()}>特效互动</Button></Col>
-                  </Row>
-                  <Row>
-                  </Row>
-                  <Row>
-                    <Col span={24}><Button onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Button></Col>
-                  </Row>
-                  <Row>
-                    <Col span={24}><Button onClick={() => msgSend(2)}>向整个房间发送信息</Button></Col>
-                  </Row>
-                  <Row>
-                    <Col span={24}><Button onClick={() => msgSend(3)}>向所有房间发送信息</Button></Col>
-                  </Row>
-                  <Row>
                     <Col span={12}><Button onClick={() => login()}>人脸登录</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
-                  </Row>
-                  <Row>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
-                  </Row>
-                  <Row>
                     <Col span={12}>
-                      <Button key="12" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Button>
-                      <Button key="13" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Button>
+                      {!recording && <Button onClick={() => record()}>开始录制</Button>}
+                      {recording &&
+                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
                     </Col>
-                    <Col span={12}>
-                      <Button key="14" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Button>
-                      <Button key="15" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Button>
+                    <Col span={12}><Button onClick={() => saveRecord()} disabled={!recorded}>保存录制</Button></Col>
+                    <Col span={24}>
+                      <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
                     </Col>
                   </Row>
                 </Col>
@@ -426,8 +449,8 @@ export default function Chat() {
         visible={confirmModalVisible}
         onOk={hideModal}
         onCancel={hideModal}
-        okText="接收"
-        cancelText="拒绝"
+        okText="确认"
+        cancelText="取消"
       >
         <p>敬请期待</p>
       </Modal>;
@@ -436,10 +459,25 @@ export default function Chat() {
         visible={confirmFileModalVisible}
         onOk={confirmToReceiveFile}
         onCancel={hideFileModal}
-        okText="确认"
-        cancelText="取消"
+        okText="接收"
+        cancelText="拒绝"
       >
         <p>{fileModalMessage}</p>
+      </Modal>;
+      <Modal
+        title="Modal"
+        visible={recordModalVisible}
+        onOk={() => {
+          console.log('recorderFile', recorderFile);
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(recorderFile)
+          a.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }}
+        onCancel={() => showRecordModal(false)}
+      >
+        <p>确认要下载视频吗</p>
       </Modal>;
     </div>
   );
