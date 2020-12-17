@@ -383,6 +383,36 @@ export default function Chat() {
     fileList,
   };
 
+  const switch12 = () => {
+    let temp = myVideoRef.current;
+    myVideoRef.current.srcObject = videoRef2.current.srcObject
+    myVideoRef.current.play()
+    myVideoRef.current.volume = 0.0;
+    videoRef2.current.srcObject = temp.srcObject
+    videoRef2.current.play()
+    videoRef2.current.volume = 0.0;
+  }
+
+  const switch13 = () => {
+    let temp = myVideoRef.current;
+    myVideoRef.current.srcObject = videoRef3.current.srcObject
+    myVideoRef.current.play()
+    myVideoRef.current.volume = 0.0;
+    videoRef3.current.srcObject = temp.srcObject
+    videoRef3.current.play()
+    videoRef3.current.volume = 0.0;
+  }
+
+  const switch14 = () => {
+    let temp = myVideoRef.current;
+    myVideoRef.current.srcObject = videoRef4.current.srcObject
+    myVideoRef.current.play()
+    myVideoRef.current.volume = 0.0;
+    videoRef4.current.srcObject = temp.srcObject
+    videoRef4.current.play()
+    videoRef4.current.volume = 0.0;
+  }
+
   const menu = (
     <Menu>
       <Menu.Item key="5" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
@@ -482,17 +512,17 @@ export default function Chat() {
           </Content>
           <Sider width='360'>
             <div style={{ marginTop: 2 }}>
-              <div className="site-layout-content-right">
+              <div className="site-layout-content-right" onDoubleClick={switch12}>
                 <video autoPlay ref={videoRef2} />
               </div>
-              <div className="site-layout-content-right">
+              <div className="site-layout-content-right" onDoubleClick={switch13}>
                 <video autoPlay ref={videoRef3} />
               </div>
-              <div className="site-layout-content-right">
+              <div className="site-layout-content-right" onDoubleClick={switch14}>
                 <video autoPlay ref={videoRef4} />
               </div>
             </div>
-          </Sider>;
+          </Sider>
         </Layout>
       </Layout>
 
@@ -505,7 +535,7 @@ export default function Chat() {
         cancelText="取消"
       >
         <p>敬请期待</p>
-      </Modal>;
+      </Modal>
       <Modal
         title="Modal"
         visible={confirmFileModalVisible}
@@ -515,7 +545,7 @@ export default function Chat() {
         cancelText="拒绝"
       >
         <p>{fileModalMessage}</p>
-      </Modal>;
+      </Modal>
       <Modal
         title="Modal"
         visible={recordModalVisible}
@@ -562,7 +592,7 @@ export default function Chat() {
         onCancel={() => showRecordModal(false)}
       >
         <p>确认要下载视频吗</p>
-      </Modal>;
+      </Modal>
     </div>
   );
 };
