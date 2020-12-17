@@ -10,16 +10,19 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const { Search } = Input;
 
-var n1 = 1;
-var n2 = 1;
-var n3 = 1;
-var n4 = 1;
-
 var rtc = SkyRTC();
 for (let i in enhance) rtc.prototype[i] = enhance[i];
 rtc = new rtc();
 let mediaRecorder;
+let mediaRecorder2;
+let mediaRecorder3;
+let mediaRecorder4;
 let recorderFile;
+let recorderFile2;
+let recorderFile3;
+let recorderFile4;
+
+var n=0;
 
 export default function Chat() {
 
@@ -37,7 +40,13 @@ export default function Chat() {
   const [fileModalMessage, setFileModalMessage] = useState('');
   const [fileSendId, setFileSendId] = useState(null);
   const [recording, setRecording] = useState(false);
+  const [recording2, setRecording2] = useState(false);
+  const [recording3, setRecording3] = useState(false);
+  const [recording4, setRecording4] = useState(false);
   const [recorded, setRecorded] = useState(false);
+  const [recorded2, setRecorded2] = useState(false);
+  const [recorded3, setRecorded3] = useState(false);
+  const [recorded4, setRecorded4] = useState(false);
   const [fileList, setFileList] = useState([]);
 
 
@@ -202,67 +211,6 @@ export default function Chat() {
       : navigator.mediaDevices.getUserMedia(options).then(success).catch(error);
   };
 
-////////////////////// HWL //////////////////////////////
-  const record_oneVideo = mode => {
-    switch (mode) {
-      case 1:
-        let buffer = [];
-        mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
-        mediaRecorder.ondataavailable = e => buffer.push(e.data);
-        mediaRecorder.onstop = e => {
-          recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
-          buffer = [];
-          alert('录制成功!');
-        };
-        mediaRecorder.start();
-        n1++;
-        break;
-      case 2:
-        stop_record_oneVideo();
-        n1--;
-        break;
-      default:
-    }
-  };
-  const stop_record_oneVideo = () => {
-    mediaRecorder.stop();
-    myVideoRef.current.css('border', '3px solid black');
-    save_record_oneVideo();
-  };
-  const save_record_oneVideo = () => {
-    alert('即将保存当前录制myVideo窗口内容...');
-    var file = new File([recorderFile], 'MSE-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
-      type: 'video/mp4',
-    });
-
-    // $('<a>').attr({
-    //   'href':window.URL.createObjectURL(recorderFile),
-    //   'download':`MSE-${(new Date).toISOString().replace(/:|\./g,'-')}.mp4`,
-    // }).appendTo('body').bind('click',function(){this.click()}).click().remove()
-  };
-
-  const record_twoVideo = mode => {
-
-  };
-  const stop_record_twoVideo = () => {
-
-  };
-
-  const record_threeVideo = mode => {
-
-  };
-  const stop_record_threeVideo = () => {
-
-  };
-
-  const record_fourVideo = mode => {
-
-  };
-  const stop_record_fourVideo = () => {
-
-  };
-//////////////////////// END HWL ///////////////////////////////////
-
   const showInfo = () => {
     showModal();
   };
@@ -307,17 +255,72 @@ export default function Chat() {
   };
 
   const record = () => {
-    setRecording(true);
-    let buffer = [];
-    mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
-    mediaRecorder.ondataavailable = e => buffer.push(e.data);
-    mediaRecorder.onstop = e => {
-      recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
-      buffer = [];
-      console.log('录制成功!');
-      setRecorded(true);
-    };
-    mediaRecorder.start();
+    if(myVideoRef.current.srcObject != null){
+      setRecording(true);
+      let buffer = [];
+      mediaRecorder = new MediaRecorder(myVideoRef.current.srcObject);
+      mediaRecorder.ondataavailable = e => buffer.push(e.data);
+      mediaRecorder.onstop = e => {
+        recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+        buffer = [];
+        console.log('录制成功!');
+        setRecorded(true);
+      };
+      mediaRecorder.start();
+    }else{
+      alert("没有视频信息");
+    }
+  };
+  const record2 = () => {
+    if(videoRef2.current.srcObject != null){
+      setRecording2(true);
+      let buffer = [];
+      mediaRecorder2 = new MediaRecorder(videoRef2.current.srcObject);
+      mediaRecorder2.ondataavailable = e => buffer.push(e.data);
+      mediaRecorder2.onstop = e => {
+        recorderFile2 = new Blob(buffer, { 'type': 'video/mp4' });
+        buffer = [];
+        console.log('录制成功!');
+        setRecorded2(true);
+      };
+      mediaRecorder2.start();
+    }else{
+      alert("没有视频信息");
+    }
+  };
+  const record3 = () => {
+    if(videoRef3.current.srcObject != null){
+      setRecording3(true);
+      let buffer = [];
+      mediaRecorder3 = new MediaRecorder(videoRef3.current.srcObject);
+      mediaRecorder3.ondataavailable = e => buffer.push(e.data);
+      mediaRecorder3.onstop = e => {
+        recorderFile3 = new Blob(buffer, { 'type': 'video/mp4' });
+        buffer = [];
+        console.log('录制成功!');
+        setRecorded3(true);
+      };
+      mediaRecorder3.start();
+    }else{
+      alert("没有视频信息");
+    }
+  };
+  const record4 = () => {
+    if(videoRef4.current.srcObject != null){
+      setRecording4(true);
+      let buffer = [];
+      mediaRecorder4 = new MediaRecorder(videoRef4.current.srcObject);
+      mediaRecorder4.ondataavailable = e => buffer.push(e.data);
+      mediaRecorder4.onstop = e => {
+        recorderFile4 = new Blob(buffer, { 'type': 'video/mp4' });
+        buffer = [];
+        console.log('录制成功!');
+        setRecorded4(true);
+      };
+      mediaRecorder4.start();
+    }else{
+      alert("没有视频信息");
+    }
   };
 
   const stopRecording = () => {
@@ -326,8 +329,43 @@ export default function Chat() {
       mediaRecorder.stop();
     }
   };
+  const stopRecording2 = () => {
+    setRecording2(false);
+    if (mediaRecorder2) {
+      mediaRecorder2.stop();
+    }
+  };
+  const stopRecording3 = () => {
+    setRecording3(false);
+    if (mediaRecorder3) {
+      mediaRecorder3.stop();
+    }
+  };
+  const stopRecording4 = () => {
+    setRecording4(false);
+    if (mediaRecorder4) {
+      mediaRecorder4.stop();
+    }
+  };
 
   const saveRecord = () => {
+    n=1;
+    // alert(n);
+    showRecordModal(true);
+  };
+  const saveRecord2 = () => {
+    n=2;
+    // alert(n);
+    showRecordModal(true);
+  };
+  const saveRecord3 = () => {
+    n=3;
+    // alert(n);
+    showRecordModal(true);
+  };
+  const saveRecord4 = () => {
+    n=4;
+    // alert(n);
     showRecordModal(true);
   };
 
@@ -347,10 +385,6 @@ export default function Chat() {
 
   const menu = (
     <Menu>
-      <Menu.Item key="1" onClick={() => record_oneVideo(n1)}>录制/保存我的窗口视频</Menu.Item>
-      <Menu.Item key="2" onClick={() => record_twoVideo(n2)}>录制/保存二号窗口视频</Menu.Item>
-      <Menu.Item key="3" onClick={() => record_threeVideo(n3)}>录制/保存三号窗口视频</Menu.Item>
-      <Menu.Item key="4" onClick={() => record_fourVideo(n4)}>录制/保存四号窗口视频</Menu.Item>
       <Menu.Item key="5" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
       <Menu.Item key="6" onClick={() => msgSend(2)}>向整个房间发送信息</Menu.Item>
       <Menu.Item key="7" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
@@ -420,6 +454,24 @@ export default function Chat() {
                       <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
                     </Col>
                     <Col span={12}><Button onClick={() => saveRecord()} disabled={!recorded}>保存录制</Button></Col>
+                    <Col span={12}>
+                      {!recording2 && <Button onClick={() => record2()}>开始录制2</Button>}
+                      {recording2 &&
+                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording2()}>停止录制2</Button>}
+                    </Col>
+                    <Col span={12}><Button onClick={() => saveRecord2()} disabled={!recorded2}>保存录制2</Button></Col>
+                    <Col span={12}>
+                      {!recording3 && <Button onClick={() => record3()}>开始录制3</Button>}
+                      {recording3 &&
+                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording3()}>停止录制3</Button>}
+                    </Col>
+                    <Col span={12}><Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button></Col>
+                    <Col span={12}>
+                      {!recording4 && <Button onClick={() => record4()}>开始录制4</Button>}
+                      {recording4 &&
+                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording4()}>停止录制4</Button>}
+                    </Col>
+                    <Col span={12}><Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button></Col>
                     <Col span={24}>
                       <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
                     </Col>
@@ -468,12 +520,44 @@ export default function Chat() {
         title="Modal"
         visible={recordModalVisible}
         onOk={() => {
-          console.log('recorderFile', recorderFile);
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(recorderFile)
-          a.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
-          a.click();
-          URL.revokeObjectURL(a.href);
+          // alert("已进入switch:"+n);
+          showRecordModal(false);
+          switch (n) {
+            case 1:
+                console.log('recorderFile', recorderFile);
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(recorderFile)
+                a.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+                break;
+            case 2:
+                console.log('recorderFile2', recorderFile2);
+                const a2 = document.createElement('a');
+                a2.href = URL.createObjectURL(recorderFile2)
+                a2.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
+                a2.click();
+                URL.revokeObjectURL(a2.href);
+                break;
+            case 3:
+                console.log('recorderFile3', recorderFile3);
+                const a3 = document.createElement('a');
+                a3.href = URL.createObjectURL(recorderFile3)
+                a3.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
+                a3.click();
+                URL.revokeObjectURL(a3.href);
+                break;
+            case 4:
+                console.log('recorderFile4', recorderFile4);
+                const a4 = document.createElement('a');
+                a4.href = URL.createObjectURL(recorderFile4)
+                a4.download = `MSE-${(new Date).toISOString().replace(/:|\./g, '-')}.mp4`;
+                a4.click();
+                URL.revokeObjectURL(a4.href);
+                break;
+            default:
+          }
+            
         }}
         onCancel={() => showRecordModal(false)}
       >
