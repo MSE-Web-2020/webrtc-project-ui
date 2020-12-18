@@ -23,6 +23,7 @@ let recorderFile3;
 let recorderFile4;
 
 var n=0;
+var flag=1;
 
 export default function Chat() {
 
@@ -39,6 +40,11 @@ export default function Chat() {
   const [recordModalVisible, setRecordModalVisible] = useState(false);
   const [fileModalMessage, setFileModalMessage] = useState('');
   const [fileSendId, setFileSendId] = useState(null);
+
+  const [flagVideo, setflagVideo] = useState(true);
+  const [flagVideo2, setflagVideo2] = useState(false);
+  const [flagVideo3, setflagVideo3] = useState(false);
+  const [flagVideo4, setflagVideo4] = useState(false);
   const [recording, setRecording] = useState(false);
   const [recording2, setRecording2] = useState(false);
   const [recording3, setRecording3] = useState(false);
@@ -253,6 +259,34 @@ export default function Chat() {
   const showRecordModal = (visible) => {
     setRecordModalVisible(visible);
   };
+
+  const exchange = () => {
+    if(flag==1){
+      flag = flag+1;
+      setflagVideo(false);
+      setflagVideo2(true);
+      setflagVideo3(false);
+      setflagVideo4(false);
+    }else if(flag==2){
+      flag = flag+1;
+      setflagVideo(false);
+      setflagVideo2(false);
+      setflagVideo3(true);
+      setflagVideo4(false);
+    }else if(flag==3){
+      flag = flag+1;
+      setflagVideo(false);
+      setflagVideo2(false);
+      setflagVideo3(false);
+      setflagVideo4(true);
+    }else if(flag==4){
+      flag = flag - 3;
+      setflagVideo(true);
+      setflagVideo2(false);
+      setflagVideo3(false);
+      setflagVideo4(false);
+    }
+  }
 
   const record = () => {
     if(myVideoRef.current.srcObject != null){
@@ -478,30 +512,24 @@ export default function Chat() {
                     <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
+                    <Col span={12}><Button onClick={() => exchange()}>切换视频录制按钮</Button></Col>
+                    <Col span={12}><Button >为界面工整待定...</Button></Col>
                     <Col span={12}>
-                      {!recording && <Button onClick={() => record()}>开始录制</Button>}
-                      {recording &&
-                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
+                      {!recording && flagVideo && <Button onClick={() => record()}>开始录制</Button>}
+                      {recording && flagVideo && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
+                      {!recording2 && flagVideo2 && <Button onClick={() => record2()}>开始录制2</Button>}
+                      {recording2 && flagVideo2 && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording2()}>停止录制2</Button>}
+                      {!recording3 && flagVideo3 && <Button onClick={() => record3()}>开始录制3</Button>}
+                      {recording3 && flagVideo3 && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording3()}>停止录制3</Button>}
+                      {!recording4 && flagVideo4 && <Button onClick={() => record4()}>开始录制4</Button>}
+                      {recording4 && flagVideo4 && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording4()}>停止录制4</Button>}
                     </Col>
-                    <Col span={12}><Button onClick={() => saveRecord()} disabled={!recorded}>保存录制</Button></Col>
                     <Col span={12}>
-                      {!recording2 && <Button onClick={() => record2()}>开始录制2</Button>}
-                      {recording2 &&
-                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording2()}>停止录制2</Button>}
+                      {flagVideo && <Button onClick={() => saveRecord()} disabled={!recorded}>保存录制</Button>}
+                      {flagVideo2 && <Button onClick={() => saveRecord2()} disabled={!recorded2}>保存录制2</Button>}
+                      {flagVideo3 && <Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button>}
+                      {flagVideo4 && <Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button>}
                     </Col>
-                    <Col span={12}><Button onClick={() => saveRecord2()} disabled={!recorded2}>保存录制2</Button></Col>
-                    <Col span={12}>
-                      {!recording3 && <Button onClick={() => record3()}>开始录制3</Button>}
-                      {recording3 &&
-                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording3()}>停止录制3</Button>}
-                    </Col>
-                    <Col span={12}><Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button></Col>
-                    <Col span={12}>
-                      {!recording4 && <Button onClick={() => record4()}>开始录制4</Button>}
-                      {recording4 &&
-                      <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording4()}>停止录制4</Button>}
-                    </Col>
-                    <Col span={12}><Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button></Col>
                     <Col span={24}>
                       <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
                     </Col>
