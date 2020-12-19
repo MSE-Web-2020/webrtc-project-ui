@@ -4,6 +4,7 @@ import { Avatar, Button, Col, Input, Layout, Modal, Row, Typography, Upload, Dro
 import { SkyRTC } from './webrtc/SkyRTC-client';
 import { enhance } from './webrtc/enhance';
 import { UpOutlined, PoweroffOutlined } from '@ant-design/icons';
+import { getQueryString } from '../common/url_utils';
 
 const { Header, Content, Sider } = Layout;
 const { Title } = Typography;
@@ -57,6 +58,9 @@ export default function Chat() {
 
 
   useEffect(() => {
+    if (!getQueryString('username')) {
+      login();
+    }
     let url = new URL(window.location.href), port = '443';
     rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
     rtc.on('connected', () => {
@@ -464,7 +468,7 @@ export default function Chat() {
           </div>
           <div style={{ float: 'right' }}>
             <Avatar style={{ backgroundColor: '#0078ff', verticalAlign: 'middle' }} size="large" gap={4}>
-              帅
+              {getQueryString('username')}
             </Avatar>
           </div>
         </Header>
