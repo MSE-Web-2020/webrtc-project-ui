@@ -23,11 +23,16 @@ let recorderFile2;
 let recorderFile3;
 let recorderFile4;
 
+let playRecorderFile;
+
 var n=0;
 var flag=1;
+var flagPlay=1;
 
 export default function Chat() {
 
+  
+  const playVideoRef = useRef(null);
   const myVideoRef = useRef(null);
   const videoRef2 = useRef(null);
   const videoRef3 = useRef(null);
@@ -41,6 +46,13 @@ export default function Chat() {
   const [recordModalVisible, setRecordModalVisible] = useState(false);
   const [fileModalMessage, setFileModalMessage] = useState('');
   const [fileSendId, setFileSendId] = useState(null);
+
+  const [flagStopVideo, setflagStopVideo] = useState("'none'|'inline-flex'");
+
+  const [flagPlayVideo, setflagPlayVideo] = useState(true);
+  const [flagPlayVideo2, setflagPlayVideo2] = useState(false);
+  const [flagPlayVideo3, setflagPlayVideo3] = useState(false);
+  const [flagPlayVideo4, setflagPlayVideo4] = useState(false);
 
   const [flagVideo, setflagVideo] = useState(true);
   const [flagVideo2, setflagVideo2] = useState(false);
@@ -291,6 +303,35 @@ export default function Chat() {
       setflagVideo4(false);
     }
   }
+  
+  const changePlayVideo = () => {
+    if(flagPlay == 1){
+      flagPlay = 2;
+      setflagPlayVideo(false);
+      setflagPlayVideo2(true);
+      setflagPlayVideo3(false);
+      setflagPlayVideo4(false);
+    }else if(flagPlay == 2){
+      flagPlay = 3;
+      setflagPlayVideo(false);
+      setflagPlayVideo2(false);
+      setflagPlayVideo3(true);
+      setflagPlayVideo4(false);
+    }else if(flagPlay == 3){
+      flagPlay = 4;
+      setflagPlayVideo(false);
+      setflagPlayVideo2(false);
+      setflagPlayVideo3(false);
+      setflagPlayVideo4(true);
+    }else if(flagPlay == 4){
+      flagPlay = 1;
+      setflagPlayVideo(true);
+      setflagPlayVideo2(false);
+      setflagPlayVideo3(false);
+      setflagPlayVideo4(false);
+    }
+
+  }
 
   const record = () => {
     if(myVideoRef.current.srcObject != null){
@@ -300,6 +341,7 @@ export default function Chat() {
       mediaRecorder.ondataavailable = e => buffer.push(e.data);
       mediaRecorder.onstop = e => {
         recorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded(true);
@@ -317,6 +359,7 @@ export default function Chat() {
       mediaRecorder2.ondataavailable = e => buffer.push(e.data);
       mediaRecorder2.onstop = e => {
         recorderFile2 = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded2(true);
@@ -334,6 +377,7 @@ export default function Chat() {
       mediaRecorder3.ondataavailable = e => buffer.push(e.data);
       mediaRecorder3.onstop = e => {
         recorderFile3 = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded3(true);
@@ -351,6 +395,7 @@ export default function Chat() {
       mediaRecorder4.ondataavailable = e => buffer.push(e.data);
       mediaRecorder4.onstop = e => {
         recorderFile4 = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded4(true);
@@ -385,6 +430,43 @@ export default function Chat() {
       mediaRecorder4.stop();
     }
   };
+  
+  const playVideo = () => {
+    setflagStopVideo("'block'|'inline-flex'");
+    if(playRecorderFile != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+      playVideoRef.current.play();
+    }else{
+      alert("无可预览的存储视频文件！");
+    }
+  }
+  const playVideo2 = () => {
+    setflagStopVideo("'block'|'inline-flex'");
+    if(playRecorderFile != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+      playVideoRef.current.play();
+    }else{
+      alert("无可预览的存储视频文件！");
+    }
+  }
+  const playVideo3 = () => {
+    setflagStopVideo("'block'|'inline-flex'");
+    if(playRecorderFile != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+      playVideoRef.current.play();
+    }else{
+      alert("无可预览的存储视频文件！");
+    }
+  }
+  const playVideo4 = () => {
+    setflagStopVideo("'block'|'inline-flex'");
+    if(playRecorderFile != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+      playVideoRef.current.play();
+    }else{
+      alert("无可预览的存储视频文件！");
+    }
+  }
 
   const saveRecord = () => {
     n=1;
@@ -476,6 +558,7 @@ export default function Chat() {
           <Content>
             <div className="site-layout-content-left">
               <video autoPlay ref={myVideoRef} height='100%' />
+			  <video style={{ display: flagStopVideo}} autoPlay ref={playVideoRef} height='100%'/>
             </div>
             <div className="site-layout-content-left">
               <Row>
@@ -516,8 +599,7 @@ export default function Chat() {
                     <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
-                    <Col span={12}><Button onClick={() => exchange()}>切换视频录制按钮</Button></Col>
-                    <Col span={12}><Button >为界面工整待定...</Button></Col>
+                    <Col span={24}><Button onClick={() => exchange()}>切换视频录制按钮</Button></Col>
                     <Col span={12}>
                       {!recording && flagVideo && <Button onClick={() => record()}>开始录制</Button>}
                       {recording && flagVideo && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
@@ -533,6 +615,14 @@ export default function Chat() {
                       {flagVideo2 && <Button onClick={() => saveRecord2()} disabled={!recorded2}>保存录制2</Button>}
                       {flagVideo3 && <Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button>}
                       {flagVideo4 && <Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button>}
+                    </Col>
+                    <Col span={24}>
+                      <Button onClick={() => changePlayVideo()}>点击切换预览视频按钮</Button></Col>
+                    <Col span={24}>
+                      {flagPlayVideo && <Button onClick={() => playVideo()}>预览录制视频</Button>}
+                      {flagPlayVideo2 && <Button onClick={() => playVideo2()}>预览录制视频2</Button>}
+                      {flagPlayVideo3 && <Button onClick={() => playVideo3()}>预览录制视频3</Button>}
+                      {flagPlayVideo4 && <Button onClick={() => playVideo4()}>预览录制视频4</Button>}
                     </Col>
                     <Col span={24}>
                       <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
