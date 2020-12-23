@@ -557,8 +557,9 @@ export default function Chat() {
         <Layout>
           <Content>
             <div className="site-layout-content-left">
+              <div id='canvas-div' style={{position:'absolute', zIndex:999}}><canvas id='canvas1'/></div>
               <video autoPlay ref={myVideoRef} height='100%' />
-			  <video style={{ display: flagStopVideo}} autoPlay ref={playVideoRef} height='100%'/>
+			        <video style={{ display: flagStopVideo}} autoPlay ref={playVideoRef} height='100%'/>
             </div>
             <div className="site-layout-content-left">
               <Row>
@@ -635,12 +636,15 @@ export default function Chat() {
           <Sider width='360'>
             <div style={{ marginTop: 2 }}>
               <div className="site-layout-content-right" onDoubleClick={switch12}>
+                <div className="canvas-div-others" style={{position:'absolute', zIndex:999}}><canvas id='canvas2'/></div>
                 <video autoPlay ref={videoRef2} />
               </div>
               <div className="site-layout-content-right" onDoubleClick={switch13}>
+                <div className="canvas-div-others" style={{position:'absolute', zIndex:999}}><canvas id='canvas3'/></div>
                 <video autoPlay ref={videoRef3} />
               </div>
               <div className="site-layout-content-right" onDoubleClick={switch14}>
+                <div className="canvas-div-others" style={{position:'absolute', zIndex:999}}><canvas id='canvas4'/></div>
                 <video autoPlay ref={videoRef4} />
               </div>
             </div>
