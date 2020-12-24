@@ -23,11 +23,16 @@ let recorderFile2;
 let recorderFile3;
 let recorderFile4;
 
-let playRecorderFile;
+let playRecorderFile = null;
+let playRecorderFile2 = null;
+let playRecorderFile3 = null;
+let playRecorderFile4 = null;
 
 var n=0;
 var flag=1;
 var flagPlay=1;
+var flagFilter=1;
+var flagShoot=1;
 
 export default function Chat() {
 
@@ -47,12 +52,20 @@ export default function Chat() {
   const [fileModalMessage, setFileModalMessage] = useState('');
   const [fileSendId, setFileSendId] = useState(null);
 
-  const [flagStopVideo, setflagStopVideo] = useState("'none'|'inline-flex'");
-
   const [flagPlayVideo, setflagPlayVideo] = useState(true);
   const [flagPlayVideo2, setflagPlayVideo2] = useState(false);
   const [flagPlayVideo3, setflagPlayVideo3] = useState(false);
   const [flagPlayVideo4, setflagPlayVideo4] = useState(false);
+
+  const [flagVideoFilter, setflagVideoFilter] = useState(true);
+  const [flagVideoFilter2, setflagVideoFilter2] = useState(false);
+  const [flagVideoFilter3, setflagVideoFilter3] = useState(false);
+  const [flagVideoFilter4, setflagVideoFilter4] = useState(false);
+  
+  const [flagVideoShoot, setflagVideoShoot] = useState(true);
+  const [flagVideoShoot2, setflagVideoShoot2] = useState(false);
+  const [flagVideoShoot3, setflagVideoShoot3] = useState(false);
+  const [flagVideoShoot4, setflagVideoShoot4] = useState(false);
 
   const [flagVideo, setflagVideo] = useState(true);
   const [flagVideo2, setflagVideo2] = useState(false);
@@ -330,7 +343,62 @@ export default function Chat() {
       setflagPlayVideo3(false);
       setflagPlayVideo4(false);
     }
+  }
 
+  const changeFilterWindow = () => {
+    if(flagFilter == 1){
+      flagFilter=2;
+      setflagVideoFilter(false);
+      setflagVideoFilter2(true);
+      setflagVideoFilter3(false);
+      setflagVideoFilter4(false);
+    }else if(flagFilter == 2){
+      flagFilter=3;
+      setflagVideoFilter(false);
+      setflagVideoFilter2(false);
+      setflagVideoFilter3(true);
+      setflagVideoFilter4(false);
+    }else if(flagFilter == 3){
+      flagFilter=4;
+      setflagVideoFilter(false);
+      setflagVideoFilter2(false);
+      setflagVideoFilter3(false);
+      setflagVideoFilter4(true);
+    }else if(flagFilter == 4){
+      flagFilter=1;
+      setflagVideoFilter(true);
+      setflagVideoFilter2(false);
+      setflagVideoFilter3(false);
+      setflagVideoFilter4(false);
+    }
+  }
+
+  const changeShootWindow = () => {
+    if(flagShoot == 1){
+      flagShoot=2;
+      setflagVideoShoot(false);
+      setflagVideoShoot2(true);
+      setflagVideoShoot3(false);
+      setflagVideoShoot4(false);
+    }else if(flagShoot == 2){
+      flagShoot=3;
+      setflagVideoShoot(false);
+      setflagVideoShoot2(false);
+      setflagVideoShoot3(true);
+      setflagVideoShoot4(false);
+    }else if(flagShoot == 3){
+      flagShoot=4;
+      setflagVideoShoot(false);
+      setflagVideoShoot2(false);
+      setflagVideoShoot3(false);
+      setflagVideoShoot4(true);
+    }else if(flagShoot == 4){
+      flagShoot=1;
+      setflagVideoShoot(true);
+      setflagVideoShoot2(false);
+      setflagVideoShoot3(false);
+      setflagVideoShoot4(false);
+    }
   }
 
   const record = () => {
@@ -359,7 +427,7 @@ export default function Chat() {
       mediaRecorder2.ondataavailable = e => buffer.push(e.data);
       mediaRecorder2.onstop = e => {
         recorderFile2 = new Blob(buffer, { 'type': 'video/mp4' });
-        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile2 = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded2(true);
@@ -377,7 +445,7 @@ export default function Chat() {
       mediaRecorder3.ondataavailable = e => buffer.push(e.data);
       mediaRecorder3.onstop = e => {
         recorderFile3 = new Blob(buffer, { 'type': 'video/mp4' });
-        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile3 = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded3(true);
@@ -395,7 +463,7 @@ export default function Chat() {
       mediaRecorder4.ondataavailable = e => buffer.push(e.data);
       mediaRecorder4.onstop = e => {
         recorderFile4 = new Blob(buffer, { 'type': 'video/mp4' });
-        playRecorderFile = new Blob(buffer, { 'type': 'video/mp4' });
+        playRecorderFile4 = new Blob(buffer, { 'type': 'video/mp4' });
         buffer = [];
         console.log('录制成功!');
         setRecorded4(true);
@@ -432,7 +500,6 @@ export default function Chat() {
   };
   
   const playVideo = () => {
-    setflagStopVideo("'block'|'inline-flex'");
     if(playRecorderFile != null){
       playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
       playVideoRef.current.play();
@@ -441,27 +508,24 @@ export default function Chat() {
     }
   }
   const playVideo2 = () => {
-    setflagStopVideo("'block'|'inline-flex'");
-    if(playRecorderFile != null){
-      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+    if(playRecorderFile2 != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile2)
       playVideoRef.current.play();
     }else{
       alert("无可预览的存储视频文件！");
     }
   }
   const playVideo3 = () => {
-    setflagStopVideo("'block'|'inline-flex'");
-    if(playRecorderFile != null){
-      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+    if(playRecorderFile3 != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile3)
       playVideoRef.current.play();
     }else{
       alert("无可预览的存储视频文件！");
     }
   }
   const playVideo4 = () => {
-    setflagStopVideo("'block'|'inline-flex'");
-    if(playRecorderFile != null){
-      playVideoRef.current.src=URL.createObjectURL(playRecorderFile)
+    if(playRecorderFile4 != null){
+      playVideoRef.current.src=URL.createObjectURL(playRecorderFile4)
       playVideoRef.current.play();
     }else{
       alert("无可预览的存储视频文件！");
@@ -488,6 +552,106 @@ export default function Chat() {
     // alert(n);
     showRecordModal(true);
   };
+
+//切换我的窗口滤镜特效
+var flag_count=0;
+const changeVideoFilter = () => {
+  if(myVideoRef.current.srcObject){
+    flag_count++;
+    switch(flag_count){
+      case 1:myVideoRef.current.className = 'grayscale';break;
+      case 2:myVideoRef.current.className = 'sepia';break;
+      case 3:myVideoRef.current.className = 'blur';break;
+      case 4:myVideoRef.current.className = '';flag_count=0;break;
+    }
+  }else{
+    alert("无视频信息");
+  }
+}
+//切换窗口2滤镜特效
+var flag_count2=0;
+const changeVideoFilter2 = () => {
+  if(videoRef2.current.srcObject){
+    flag_count2++;
+    switch(flag_count2){
+      case 1:videoRef2.current.className = 'grayscale';break;
+      case 2:videoRef2.current.className = 'sepia';break;
+      case 3:videoRef2.current.className = 'blur';break;
+      case 4:videoRef2.current.className = '';flag_count2=0;break;
+    }
+  }else{
+    alert("无视频信息");
+  }
+}
+//切换窗口3滤镜特效
+var flag_count3=0;
+const changeVideoFilter3 = () => {
+  if(videoRef3.current.srcObject){
+    flag_count3++;
+    switch(flag_count3){
+      case 1:videoRef3.current.className = 'grayscale';break;
+      case 2:videoRef3.current.className = 'sepia';break;
+      case 3:videoRef3.current.className = 'blur';break;
+      case 4:videoRef3.current.className = '';flag_count3=0;break;
+    }
+  }else{
+    alert("无视频信息");
+  }
+}
+//切换窗口4滤镜特效
+var flag_count4=0;
+const changeVideoFilter4 = () => {
+  if(videoRef4.current.srcObject){
+    flag_count4++;
+    switch(flag_count4){
+      case 1:videoRef4.current.className = 'grayscale';break;
+      case 2:videoRef4.current.className = 'sepia';break;
+      case 3:videoRef4.current.className = 'blur';break;
+      case 4:videoRef4.current.className = '';flag_count4=0;break;
+    }
+  }else{
+    alert("无视频信息");
+  }
+}
+
+//截图功能实现
+const shoot = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  var imageData_length = imageData.data.length / 4;
+  // 解析之后进行算法运算
+  for (var i = 0; i < imageData_length; i++) {
+      imageData.data[i * 4] = 255 - imageData.data[i * 4];
+      imageData.data[i * 4 + 1] = 255 - imageData.data[i * 4 + 1];
+      imageData.data[i * 4 + 2] = 255 - imageData.data[i * 4 + 2];
+  }
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+const download = blob => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = Math.random().toString(36).substr(2,14);
+  a.click();
+  URL.revokeObjectURL(a.href);                
+}
 
   const fileButtonProps = {
     onRemove: file => {
@@ -540,6 +704,27 @@ export default function Chat() {
       <Menu.Item key="7" onClick={() => msgSend(3)}>向所有房间发送信息</Menu.Item>
     </Menu>
   );
+  //截图功能菜单
+  const menu_shoot = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => shoot(1)}>反色(负片)效果</Menu.Item>
+    </Menu>
+  );
+  const menu_shoot2 = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => shoot(2)}>反色(负片)效果</Menu.Item>
+    </Menu>
+  );
+  const menu_shoot3 = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => shoot(3)}>反色(负片)效果</Menu.Item>
+    </Menu>
+  );
+  const menu_shoot4 = (
+    <Menu>
+      <Menu.Item key="1" onClick={() => shoot(4)}>反色(负片)效果</Menu.Item>
+    </Menu>
+  );
 
   return (
     <div className="home-chat">
@@ -559,7 +744,7 @@ export default function Chat() {
             <div className="site-layout-content-left">
               <div id='canvas-div' style={{position:'absolute', zIndex:999}}><canvas id='canvas1'/></div>
               <video autoPlay ref={myVideoRef} height='100%' />
-			        <video style={{ display: flagStopVideo}} autoPlay ref={playVideoRef} height='100%'/>
+			        <video style={{ display: 'block'|'inline-flex'}} autoPlay ref={playVideoRef} height='100%'/>
             </div>
             <div className="site-layout-content-left">
               <Row>
@@ -617,13 +802,31 @@ export default function Chat() {
                       {flagVideo3 && <Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button>}
                       {flagVideo4 && <Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button>}
                     </Col>
-                    <Col span={24}>
-                      <Button onClick={() => changePlayVideo()}>点击切换预览视频按钮</Button></Col>
-                    <Col span={24}>
-                      {flagPlayVideo && <Button onClick={() => playVideo()}>预览录制视频</Button>}
-                      {flagPlayVideo2 && <Button onClick={() => playVideo2()}>预览录制视频2</Button>}
-                      {flagPlayVideo3 && <Button onClick={() => playVideo3()}>预览录制视频3</Button>}
-                      {flagPlayVideo4 && <Button onClick={() => playVideo4()}>预览录制视频4</Button>}
+                    <Col span={12}>
+                      <Button onClick={() => changePlayVideo()}>切换预览视频按钮</Button></Col>
+                    <Col span={12}>
+                      {flagPlayVideo && <Button onClick={() => playVideo()}>预览录制窗口</Button>}
+                      {flagPlayVideo2 && <Button onClick={() => playVideo2()}>预览录制窗口2</Button>}
+                      {flagPlayVideo3 && <Button onClick={() => playVideo3()}>预览录制窗口3</Button>}
+                      {flagPlayVideo4 && <Button onClick={() => playVideo4()}>预览录制窗口4</Button>}
+                    </Col>
+                    <Col span={12}>
+                      <Button onClick={() => changeFilterWindow()}>切换滤镜窗口</Button>
+                    </Col>
+                    <Col span={12}>
+                      {flagVideoFilter && <Button onClick={() => changeVideoFilter()}>切换视频滤镜</Button>}
+                      {flagVideoFilter2 && <Button onClick={() => changeVideoFilter2()}>切换视频2滤镜</Button>}
+                      {flagVideoFilter3 && <Button onClick={() => changeVideoFilter3()}>切换视频3滤镜</Button>}
+                      {flagVideoFilter4 && <Button onClick={() => changeVideoFilter4()}>切换视频4滤镜</Button>}
+                    </Col>
+                    <Col span={12}>
+                      <Button onClick={() => changeShootWindow()}>切换特效截图窗口</Button>
+                    </Col>
+                    <Col span={12}>
+                    {flagVideoShoot && <Dropdown overlay={menu_shoot} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot2 && <Dropdown overlay={menu_shoot2} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图2<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot3 && <Dropdown overlay={menu_shoot3} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图3<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot4 && <Dropdown overlay={menu_shoot4} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图4<UpOutlined /></Button></Dropdown>}
                     </Col>
                     <Col span={24}>
                       <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
