@@ -86,7 +86,7 @@ export default function Chat() {
     if (!getQueryString('username')) {
       login();
     }
-    let url = new URL(window.location.href), port = '443';
+    let url = new URL(window.location.href), port = '443s';
     rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
     rtc.on('connected', () => {
       console.log('websocket connected');
@@ -562,7 +562,8 @@ const changeVideoFilter = () => {
       case 1:myVideoRef.current.className = 'grayscale';break;
       case 2:myVideoRef.current.className = 'sepia';break;
       case 3:myVideoRef.current.className = 'blur';break;
-      case 4:myVideoRef.current.className = '';flag_count=0;break;
+      case 4:myVideoRef.current.className = 'saturate';break;
+      case 5:myVideoRef.current.className = '';flag_count=0;break;
     }
   }else{
     alert("无视频信息");
@@ -577,7 +578,8 @@ const changeVideoFilter2 = () => {
       case 1:videoRef2.current.className = 'grayscale';break;
       case 2:videoRef2.current.className = 'sepia';break;
       case 3:videoRef2.current.className = 'blur';break;
-      case 4:videoRef2.current.className = '';flag_count2=0;break;
+      case 4:videoRef2.current.className = 'saturate';break;
+      case 5:videoRef2.current.className = '';flag_count2=0;break;
     }
   }else{
     alert("无视频信息");
@@ -592,7 +594,8 @@ const changeVideoFilter3 = () => {
       case 1:videoRef3.current.className = 'grayscale';break;
       case 2:videoRef3.current.className = 'sepia';break;
       case 3:videoRef3.current.className = 'blur';break;
-      case 4:videoRef3.current.className = '';flag_count3=0;break;
+      case 4:videoRef3.current.className = 'saturate';break;
+      case 5:videoRef3.current.className = '';flag_count3=0;break;
     }
   }else{
     alert("无视频信息");
@@ -607,7 +610,8 @@ const changeVideoFilter4 = () => {
       case 1:videoRef4.current.className = 'grayscale';break;
       case 2:videoRef4.current.className = 'sepia';break;
       case 3:videoRef4.current.className = 'blur';break;
-      case 4:videoRef4.current.className = '';flag_count4=0;break;
+      case 4:videoRef4.current.className = 'saturate';break;
+      case 5:videoRef4.current.className = '';flag_count4=0;break;
     }
   }else{
     alert("无视频信息");
