@@ -615,7 +615,8 @@ const changeVideoFilter4 = () => {
 }
 
 //截图功能实现
-const shoot = flag => {
+//反色
+const shoot_reverse = flag => {
   const canvas = document.createElement('canvas');
   canvas.width = 640;
   canvas.height = 480;
@@ -645,6 +646,249 @@ const shoot = flag => {
     download(myblob);
   });
 }
+//卷积
+const shoot_cnn = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  // 解析之后进行算法运算
+  for (var i = 0; i < imageData.height; i++){
+    for(var j = 0; j < imageData.width; j++){
+      var x = i*4*imageData.width + 4*j;
+      var r = imageData.data[x];
+      var g = imageData.data[x+1];
+      var b = imageData.data[x+2];
+      imageData.data[x] = (r+g+b)/3;
+      imageData.data[x+1] = (r+g+b)/3;
+      imageData.data[x+2] = (r+g+b)/3;
+    }
+  }
+  for (var i = 0; i < imageData.height; i++){
+    for(var j = 0; j < imageData.width; j++){
+      var x = i*4*imageData.width + 4*j;
+      if(i>0 && j>0 && i<imageData.height-1 && j<imageData.width-1){
+        var r1 = (i-1)*4*imageData.width + 4*j-4; var g1 = (i-1)*4*imageData.width + 4*j-3; var b1 = (i-1)*4*imageData.width + 4*j-2;
+        var r2 = (i-1)*4*imageData.width + 4*j;   var g2 = (i-1)*4*imageData.width + 4*j+1; var b2 = (i-1)*4*imageData.width + 4*j+2;
+        var r3 = (i-1)*4*imageData.width + 4*j+4; var g3 = (i-1)*4*imageData.width + 4*j+5; var b3 = (i-1)*4*imageData.width + 4*j+6;
+        var r4 = i*4*imageData.width + 4*j-4;     var g4 = i*4*imageData.width + 4*j-3;     var b4 = i*4*imageData.width + 4*j-2;
+        var r5 = i*4*imageData.width + 4*j+4;     var g5 = i*4*imageData.width + 4*j+5;     var b5 = i*4*imageData.width + 4*j+6;
+        var r6 = (i+1)*4*imageData.width + 4*j-4; var g6 = (i+1)*4*imageData.width + 4*j-3; var b6 = (i+1)*4*imageData.width + 4*j-2;
+        var r7 = (i+1)*4*imageData.width + 4*j;   var g7 = (i+1)*4*imageData.width + 4*j+1; var b7 = (i+1)*4*imageData.width + 4*j+2;
+        var r8 = (i+1)*4*imageData.width + 4*j+4; var g8 = (i+1)*4*imageData.width + 4*j+5; var b8 = (i+1)*4*imageData.width + 4*j+6;
+        imageData.data[x] = imageData.data[r1]+imageData.data[r2]+imageData.data[r3]+imageData.data[r4]+imageData.data[r5]+imageData.data[r6]+imageData.data[r7]+imageData.data[r8]-8*imageData.data[x];
+        // imageData.data[x] = imageData.data[r2]+imageData.data[r4]+imageData.data[r5]+imageData.data[r7]-4*imageData.data[x];
+        imageData.data[x+1] = imageData.data[x];
+        imageData.data[x+2] = imageData.data[x];
+      }
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+//gray
+const shoot_gray = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  // 解析之后进行算法运算
+  for (var i = 0; i < imageData.height; i++){
+    for(var j = 0; j < imageData.width; j++){
+      var x = i*4*imageData.width + 4*j;
+      var r = imageData.data[x];
+      var g = imageData.data[x+1];
+      var b = imageData.data[x+2];
+      var gray = 0.3 * r + 0.59 * g + 0.11 * b;//基于人眼颜色感知的去色效果
+      imageData.data[x] = gray;
+      imageData.data[x+1] = gray;
+      imageData.data[x+2] = gray;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+//版画（二值化）
+const shoot_bool = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  // 解析之后进行算法运算
+  for (var i = 0; i < imageData.height; i++){
+    for(var j = 0; j < imageData.width; j++){
+      var x = i*4*imageData.width + 4*j;
+      var r = imageData.data[x];
+      var g = imageData.data[x+1];
+      var b = imageData.data[x+2];
+      var gray = 0.3 * r + 0.59 * g + 0.11 * b;//基于人眼颜色感知的去色效果
+      var white_black;
+      if (gray > 200) {
+        white_black = 255;
+      } else if(gray < 100){
+        white_black = 0;
+      }else{
+
+      }
+      imageData.data[x] = white_black;
+      imageData.data[x+1] = white_black;
+      imageData.data[x+2] = white_black;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+//高斯模糊
+const shoot_gaussBlur = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  // 解析之后进行算法运算
+  imageData = gaussBlur(imageData);
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+//高斯模糊公式
+const gaussBlur = imgData => {
+  console.log(imgData);
+  var pixes = imgData.data;
+  var width = imgData.width;
+  var height = imgData.height;
+  var gaussMatrix = [],
+      gaussSum = 0,
+      x, y,
+      r, g, b, a,
+      i, j, k, len;
+
+  var radius = 30;
+  var sigma = 5;
+
+  a = 1 / (Math.sqrt(2 * Math.PI) * sigma);
+  b = -1 / (2 * sigma * sigma);
+  //生成高斯矩阵
+  for (i = 0, x = -radius; x <= radius; x++, i++){
+      g = a * Math.exp(b * x * x);
+      gaussMatrix[i] = g;
+      gaussSum += g;
+
+  }
+  //归一化, 保证高斯矩阵的值在[0,1]之间
+  for (i = 0, len = gaussMatrix.length; i < len; i++) {
+      gaussMatrix[i] /= gaussSum;
+  }
+  //x 方向一维高斯运算
+  for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+          r = g = b = a = 0;
+          gaussSum = 0;
+          for(j = -radius; j <= radius; j++){
+              k = x + j;
+              if(k >= 0 && k < width){//确保 k 没超出 x 的范围
+                  //r,g,b,a 四个一组
+                  i = (y * width + k) * 4;
+                  r += pixes[i] * gaussMatrix[j + radius];
+                  g += pixes[i + 1] * gaussMatrix[j + radius];
+                  b += pixes[i + 2] * gaussMatrix[j + radius];
+                  // a += pixes[i + 3] * gaussMatrix[j];
+                  gaussSum += gaussMatrix[j + radius];
+              }
+          }
+          i = (y * width + x) * 4;
+          // 除以 gaussSum 是为了消除处于边缘的像素, 高斯运算不足的问题
+          // console.log(gaussSum)
+          pixes[i] = r / gaussSum;
+          pixes[i + 1] = g / gaussSum;
+          pixes[i + 2] = b / gaussSum;
+          // pixes[i + 3] = a ;
+      }
+  }
+  //y 方向一维高斯运算
+  for (x = 0; x < width; x++) {
+      for (y = 0; y < height; y++) {
+          r = g = b = a = 0;
+          gaussSum = 0;
+          for(j = -radius; j <= radius; j++){
+              k = y + j;
+              if(k >= 0 && k < height){//确保 k 没超出 y 的范围
+                  i = (k * width + x) * 4;
+                  r += pixes[i] * gaussMatrix[j + radius];
+                  g += pixes[i + 1] * gaussMatrix[j + radius];
+                  b += pixes[i + 2] * gaussMatrix[j + radius];
+                  // a += pixes[i + 3] * gaussMatrix[j];
+                  gaussSum += gaussMatrix[j + radius];
+              }
+          }
+          i = (y * width + x) * 4;
+          pixes[i] = r / gaussSum;
+          pixes[i + 1] = g / gaussSum;
+          pixes[i + 2] = b / gaussSum;
+      }
+  }
+  console.log(imgData);
+  return imgData;
+}
+
 const download = blob => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -707,22 +951,38 @@ const download = blob => {
   //截图功能菜单
   const menu_shoot = (
     <Menu>
-      <Menu.Item key="1" onClick={() => shoot(1)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="1" onClick={() => shoot_reverse(1)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="2" onClick={() => shoot_cnn(1)}>边缘检测</Menu.Item>
+      <Menu.Item key="3" onClick={() => shoot_gray(1)}>去色效果</Menu.Item>
+      <Menu.Item key="4" onClick={() => shoot_bool(1)}>版画（二值化）</Menu.Item>
+      <Menu.Item key="5" onClick={() => shoot_gaussBlur(1)}>高斯模糊</Menu.Item>
     </Menu>
   );
   const menu_shoot2 = (
     <Menu>
-      <Menu.Item key="1" onClick={() => shoot(2)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="1" onClick={() => shoot_reverse(2)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="2" onClick={() => shoot_cnn(2)}>边缘检测</Menu.Item>
+      <Menu.Item key="3" onClick={() => shoot_gray(2)}>去色效果</Menu.Item>
+      <Menu.Item key="4" onClick={() => shoot_bool(2)}>版画（二值化）</Menu.Item>
+      <Menu.Item key="5" onClick={() => shoot_gaussBlur(2)}>高斯模糊</Menu.Item>
     </Menu>
   );
   const menu_shoot3 = (
     <Menu>
-      <Menu.Item key="1" onClick={() => shoot(3)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="1" onClick={() => shoot_reverse(3)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="2" onClick={() => shoot_cnn(3)}>边缘检测</Menu.Item>
+      <Menu.Item key="3" onClick={() => shoot_gray(3)}>去色效果</Menu.Item>
+      <Menu.Item key="4" onClick={() => shoot_bool(3)}>版画（二值化）</Menu.Item>
+      <Menu.Item key="5" onClick={() => shoot_gaussBlur(3)}>高斯模糊</Menu.Item>
     </Menu>
   );
   const menu_shoot4 = (
     <Menu>
-      <Menu.Item key="1" onClick={() => shoot(4)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="1" onClick={() => shoot_reverse(4)}>反色(负片)效果</Menu.Item>
+      <Menu.Item key="2" onClick={() => shoot_cnn(4)}>边缘检测</Menu.Item>
+      <Menu.Item key="3" onClick={() => shoot_gray(4)}>去色效果</Menu.Item>
+      <Menu.Item key="4" onClick={() => shoot_bool(4)}>版画（二值化）</Menu.Item>
+      <Menu.Item key="5" onClick={() => shoot_gaussBlur(4)}>高斯模糊</Menu.Item>
     </Menu>
   );
 
