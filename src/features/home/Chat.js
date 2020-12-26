@@ -893,6 +893,31 @@ const gaussBlur = imgData => {
   return imgData;
 }
 
+//原图
+const shoot = flag => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const ctx = canvas.getContext('2d');
+  if(flag == 1 && myVideoRef.current.srcObject != null){
+    ctx.drawImage(myVideoRef.current,0,0);
+  }else if(flag == 2 && videoRef2.current.srcObject != null){
+    ctx.drawImage(videoRef2.current,0,0);
+  }else if(flag == 3 && videoRef3.current.srcObject != null){
+    ctx.drawImage(videoRef3.current,0,0);
+  }else if(flag == 4 && videoRef4.current.srcObject != null){
+    ctx.drawImage(videoRef4.current,0,0);
+  }else{
+    alert("无视频信息！");
+    return;
+  }
+  var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);    
+  ctx.putImageData(imageData, 0, 0);
+  canvas.toBlob((myblob)=>{
+    download(myblob);
+  });
+}
+
 const download = blob => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -960,6 +985,7 @@ const download = blob => {
       <Menu.Item key="3" onClick={() => shoot_gray(1)}>去色效果</Menu.Item>
       <Menu.Item key="4" onClick={() => shoot_bool(1)}>版画（二值化）</Menu.Item>
       <Menu.Item key="5" onClick={() => shoot_gaussBlur(1)}>高斯模糊</Menu.Item>
+      <Menu.Item key="6" onClick={() => shoot(1)}>原图</Menu.Item>
     </Menu>
   );
   const menu_shoot2 = (
@@ -969,6 +995,7 @@ const download = blob => {
       <Menu.Item key="3" onClick={() => shoot_gray(2)}>去色效果</Menu.Item>
       <Menu.Item key="4" onClick={() => shoot_bool(2)}>版画（二值化）</Menu.Item>
       <Menu.Item key="5" onClick={() => shoot_gaussBlur(2)}>高斯模糊</Menu.Item>
+      <Menu.Item key="6" onClick={() => shoot(2)}>原图</Menu.Item>
     </Menu>
   );
   const menu_shoot3 = (
@@ -978,6 +1005,7 @@ const download = blob => {
       <Menu.Item key="3" onClick={() => shoot_gray(3)}>去色效果</Menu.Item>
       <Menu.Item key="4" onClick={() => shoot_bool(3)}>版画（二值化）</Menu.Item>
       <Menu.Item key="5" onClick={() => shoot_gaussBlur(3)}>高斯模糊</Menu.Item>
+      <Menu.Item key="6" onClick={() => shoot(3)}>原图</Menu.Item>
     </Menu>
   );
   const menu_shoot4 = (
@@ -987,6 +1015,7 @@ const download = blob => {
       <Menu.Item key="3" onClick={() => shoot_gray(4)}>去色效果</Menu.Item>
       <Menu.Item key="4" onClick={() => shoot_bool(4)}>版画（二值化）</Menu.Item>
       <Menu.Item key="5" onClick={() => shoot_gaussBlur(4)}>高斯模糊</Menu.Item>
+      <Menu.Item key="6" onClick={() => shoot(4)}>原图</Menu.Item>
     </Menu>
   );
 
