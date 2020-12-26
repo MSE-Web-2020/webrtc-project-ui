@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { Avatar, Button, Col, Input, Layout, Modal, Row, Typography, Upload, Dropdown, Menu } from 'antd';
-import { SkyRTC } from './webrtc/SkyRTC-client';
+import { myRTC } from './webrtc/webRtcClient';
 import { enhance } from './webrtc/enhance';
 import { UpOutlined, PoweroffOutlined } from '@ant-design/icons';
 import { getQueryString } from '../common/url_utils';
@@ -11,7 +11,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 const { Search } = Input;
 
-var rtc = SkyRTC();
+let rtc = myRTC();
 for (let i in enhance) rtc.prototype[i] = enhance[i];
 rtc = new rtc();
 let mediaRecorder;
@@ -28,11 +28,11 @@ let playRecorderFile2 = null;
 let playRecorderFile3 = null;
 let playRecorderFile4 = null;
 
-var n=0;
-var flag=1;
-var flagPlay=1;
-var flagFilter=1;
-var flagShoot=1;
+let n=0;
+let flag=1;
+let flagPlay=1;
+let flagFilter=1;
+let flagShoot=1;
 
 export default function Chat() {
 
@@ -941,31 +941,34 @@ const download = blob => {
   };
 
   const switch12 = () => {
-    let temp = myVideoRef.current;
-    myVideoRef.current.srcObject = videoRef2.current.srcObject
+    const myVideoStreamCopy = myVideoRef.current.srcObject.clone()
+    const otherVideoStreamCopy = videoRef2.current.srcObject.clone();
+    myVideoRef.current.srcObject = otherVideoStreamCopy
+    videoRef2.current.srcObject = myVideoStreamCopy
     myVideoRef.current.play()
     myVideoRef.current.volume = 0.0;
-    videoRef2.current.srcObject = temp.srcObject
     videoRef2.current.play()
     videoRef2.current.volume = 0.0;
   }
 
   const switch13 = () => {
-    let temp = myVideoRef.current;
-    myVideoRef.current.srcObject = videoRef3.current.srcObject
+    const myVideoStreamCopy = myVideoRef.current.srcObject.clone()
+    const otherVideoStreamCopy = videoRef3.current.srcObject.clone();
+    myVideoRef.current.srcObject = otherVideoStreamCopy
+    videoRef3.current.srcObject = myVideoStreamCopy
     myVideoRef.current.play()
     myVideoRef.current.volume = 0.0;
-    videoRef3.current.srcObject = temp.srcObject
     videoRef3.current.play()
     videoRef3.current.volume = 0.0;
   }
 
   const switch14 = () => {
-    let temp = myVideoRef.current;
-    myVideoRef.current.srcObject = videoRef4.current.srcObject
+    const myVideoStreamCopy = myVideoRef.current.srcObject.clone()
+    const otherVideoStreamCopy = videoRef4.current.srcObject.clone();
+    myVideoRef.current.srcObject = otherVideoStreamCopy
+    videoRef4.current.srcObject = myVideoStreamCopy
     myVideoRef.current.play()
     myVideoRef.current.volume = 0.0;
-    videoRef4.current.srcObject = temp.srcObject
     videoRef4.current.play()
     videoRef4.current.volume = 0.0;
   }
