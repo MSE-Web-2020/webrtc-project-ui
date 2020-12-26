@@ -11,17 +11,17 @@
 			<video id="video" autoplay muted></video>
 			<canvas id="overlay"/>
 		</div>
-		<div class='userinfo'>
-			<span>变绿3秒开启识别，点击头像可重新识别</span>
-			<input id='username' placeholder="user">
-			<input id='roomname' placeholder="room">
-			<div class='button'>
-				<button id='login'>登录</button>
-				<button id='register'>注册</button>
+		<div class='userinfo' id="userlogin">
+			<span id="hint">变绿3秒开启识别，点击头像可重新识别</span>
+			<input id='username' placeholder="user" class="tl-price-input">
+			<input id='roomname' placeholder="room" class="tl-price-input">
+			<div class='buttongrp'>
+				<button id='login' class="small blue button">登录</button>
+				<button id='register'  class="small blue button">注册</button>
 			</div>
-			<div class='test'>
-				<button id='delete'>删除用户</button>
-				<button id='onff'>视频开关</button>
+			<div class='buttongrp'>
+				<button id='delete' class="small red button">删除用户</button>
+				<button id='onff' class="small button">视频开关</button>
 			</div>
 		</div>
 	</div>

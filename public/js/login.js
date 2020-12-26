@@ -2,7 +2,7 @@
 const video = $('#video')[0], canvas = $('#overlay')[0]
 var snap, timer, username, stream, onff
 var opt={
-    vsize:500,	//视频框尺寸
+    vsize:400,	//视频框尺寸
     ssize:()=>{return opt.vsize/2},	//验证图像尺寸
     ldmks:false,	//是否开启特征点
     dtime:3000,	//初次验证所需时间
