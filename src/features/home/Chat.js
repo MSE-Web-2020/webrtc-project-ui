@@ -1038,18 +1038,33 @@ const download = blob => {
                     />
                   </div>
                 </Col>
+
                 <Col span={6} id="button-list">
                   <Row>
+                    <div id="functions">
+                      <Row>
                     <Col span={24}><Button onClick={() => showInfo()}>用户和聊天室信息</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={12}><Upload {...fileButtonProps}><Button>选择文件</Button></Upload></Col>
                     <Col span={12}><Button onClick={() => uploadFile()}>上传文件</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={12}><Button onClick={() => share()}>分享</Button></Col>
                     <Col span={12}><Button onClick={() => showEffect()}>特效互动</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={12}><Button onClick={() => login()}>人脸登录</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={24}><Button onClick={() => exchange()}>切换视频录制按钮</Button></Col>
+                      </Row>
+                      <Row>
                     <Col span={12}>
                       {!recording && flagVideo && <Button onClick={() => record()}>开始录制</Button>}
                       {recording && flagVideo && <Button type="dashed" icon={<PoweroffOutlined />} onClick={() => stopRecording()}>停止录制</Button>}
@@ -1066,6 +1081,8 @@ const download = blob => {
                       {flagVideo3 && <Button onClick={() => saveRecord3()} disabled={!recorded3}>保存录制3</Button>}
                       {flagVideo4 && <Button onClick={() => saveRecord4()} disabled={!recorded4}>保存录制4</Button>}
                     </Col>
+                      </Row>
+                      <Row>
                     <Col span={12}>
                       <Button onClick={() => changePlayVideo()}>切换预览视频按钮</Button></Col>
                     <Col span={12}>
@@ -1074,6 +1091,8 @@ const download = blob => {
                       {flagPlayVideo3 && <Button onClick={() => playVideo3()}>预览录制窗口3</Button>}
                       {flagPlayVideo4 && <Button onClick={() => playVideo4()}>预览录制窗口4</Button>}
                     </Col>
+                      </Row>
+                      <Row>
                     <Col span={12}>
                       <Button onClick={() => changeFilterWindow()}>切换滤镜窗口</Button>
                     </Col>
@@ -1083,18 +1102,24 @@ const download = blob => {
                       {flagVideoFilter3 && <Button onClick={() => changeVideoFilter3()}>切换视频3滤镜</Button>}
                       {flagVideoFilter4 && <Button onClick={() => changeVideoFilter4()}>切换视频4滤镜</Button>}
                     </Col>
+                      </Row>
+                      <Row>
                     <Col span={12}>
                       <Button onClick={() => changeShootWindow()}>切换特效截图窗口</Button>
                     </Col>
                     <Col span={12}>
-                    {flagVideoShoot && <Dropdown overlay={menu_shoot} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图<UpOutlined /></Button></Dropdown>}
-                    {flagVideoShoot2 && <Dropdown overlay={menu_shoot2} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图2<UpOutlined /></Button></Dropdown>}
-                    {flagVideoShoot3 && <Dropdown overlay={menu_shoot3} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图3<UpOutlined /></Button></Dropdown>}
-                    {flagVideoShoot4 && <Dropdown overlay={menu_shoot4} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>特效截图4<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot && <Dropdown overlay={menu_shoot} placement="topLeft"><Button style={{ float: 'right' }}>特效截图<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot2 && <Dropdown overlay={menu_shoot2} placement="topLeft"><Button style={{ float: 'right' }}>特效截图2<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot3 && <Dropdown overlay={menu_shoot3} placement="topLeft"><Button style={{ float: 'right' }}>特效截图3<UpOutlined /></Button></Dropdown>}
+                    {flagVideoShoot4 && <Dropdown overlay={menu_shoot4} placement="topLeft"><Button style={{ float: 'right' }}>特效截图4<UpOutlined /></Button></Dropdown>}
                     </Col>
+                      </Row>
+                      <Row>
                     <Col span={24}>
                       <Dropdown overlay={menu} placement="topLeft"><Button style={{ marginTop: 5, float: 'right' }}>更多功能<UpOutlined /></Button></Dropdown>
                     </Col>
+                      </Row>
+                    </div>
                   </Row>
                 </Col>
               </Row>
