@@ -34,6 +34,63 @@ let flagPlay=1;
 let flagFilter=1;
 let flagShoot=1;
 
+const draw = {
+  tag:false,
+  size:2,
+  color:'black',
+  box:null,
+  current:[],
+  init:function(){
+    this.canvas = this.box.getContext('2d')
+    this.canvas.lineWidth = this.size
+    this.canvas.strokeStyle = this.color
+    this.canvas.lineCap = 'round'
+    this.canvas.lineJoin = 'round'
+  },
+  initTag:0,
+  onmouse:function(e){
+    if(e){
+      this.tag = true;
+      this.point = {x:e.offsetX, y:e.offsetY}
+    }else{
+      this.tag = false
+      rtc.all_mate({ mode: 'draw', data: this.current});
+      this.current = []
+    }
+  },
+  draw:function(e){
+    if(this.tag){
+      let timesX = 300 / this.box.offsetWidth
+      let timesY = 150 / this.box.offsetHeight
+      this.current.push(this.point)
+      this.canvas.beginPath()
+      this.canvas.lineTo(this.point.x * timesX, this.point.y * timesY)
+      this.canvas.lineTo(e.offsetX * timesX, e.offsetY * timesY)
+      this.canvas.stroke()
+      this.point = {x:e.offsetX, y:e.offsetY}
+    }
+  },
+  receive:function(e) {
+    let that = this
+    let point = e[0]
+    let timesX = 300 / this.box.offsetWidth
+    let timesY = 150 / this.box.offsetHeight
+    e.forEach(item=>{
+      that.canvas.beginPath()
+      that.canvas.lineTo(point.x * timesX, point.y * timesY)
+      that.canvas.lineTo(item.x * timesX, item.y * timesY)
+      that.canvas.stroke()
+      point = item
+    })
+  },
+  drawFun:{
+    mousedown:e=>draw.onmouse(e),
+    mouseup:e=>draw.onmouse(),
+    mouseleave:e=>draw.onmouse(),
+    mousemove:e=>draw.draw(e),
+  }
+}
+
 export default function Chat() {
 
   
@@ -81,13 +138,13 @@ export default function Chat() {
   const [recorded4, setRecorded4] = useState(false);
   const [fileList, setFileList] = useState([]);
 
-
   useEffect(() => {
     if (!getQueryString('username')) {
       login();
     }
     let url = new URL(window.location.href), port = '443';
     rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
+    // rtc.connect(`wss://april8.xyz${url.search}`, url.hash);
     rtc.on('connected', () => {
       console.log('websocket connected');
       rtc.createStream({ 'video': true, 'audio': true });
@@ -100,6 +157,9 @@ export default function Chat() {
       myVideoRef.current.play();
       myVideoRef.current.volume = 0.0;
       console.log('myVideo is setup successfully');
+      draw.box = document.getElementById('canvas1')
+      draw.init()
+      draw.initTag = 1
     });
     rtc.on('stream_create_error', () => alert('create stream failed!'));
   }, []);
@@ -118,6 +178,9 @@ export default function Chat() {
           setMsg(`${msg}\n房间推送信息: ${message.data}`);
           break;
         case 'effect':
+          break;
+        case 'draw':
+            draw.receive(message.data);
           break;
         default:
           break;
@@ -973,6 +1036,25 @@ const download = blob => {
     videoRef4.current.volume = 0.0;
   }
 
+  const drawFun = tag =>{
+    if(tag){
+      if(draw.initTag < 2){
+        draw.init()
+        for (let i in draw.drawFun) draw.box.addEventListener(i, draw.drawFun[i])
+        draw.initTag = 2
+      }else{
+        draw.box.height = draw.box.height
+        draw.init()
+      }
+    }else{
+      draw.box.height = draw.box.height
+      draw.init()
+      if(draw.initTag < 2) return
+      for (let i in draw.drawFun) draw.box.removeEventListener(i, draw.drawFun[i])
+      draw.initTag = 1
+    }
+  }
+
   const menu = (
     <Menu>
       <Menu.Item key="5" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
@@ -1086,11 +1168,11 @@ const download = blob => {
                     <Col span={12}><Button onClick={() => showEffect()}>特效互动</Button></Col>
                       </Row>
                       <Row>
-                    <Col span={12}><Button onClick={() => login()}>人脸登录</Button></Col>
-                    <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
+                    <Col span={12}><Button onClick={() => drawFun(true)}>初始化画板</Button></Col>
+                    <Col span={12}><Button onClick={()=> drawFun(false)}>移除画板</Button></Col>
                       </Row>
                       <Row>
-                    <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
+                    <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>
                     <Col span={12}><Button onClick={() => stream_change(false)}>共享摄像头</Button></Col>
                       </Row>
                       <Row>
