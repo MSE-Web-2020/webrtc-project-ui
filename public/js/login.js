@@ -19,7 +19,7 @@ var opt={
     inputSize:[128,160,224,320,416,512,608],
     faceopt:()=>{return new faceapi.TinyFaceDetectorOptions({inputSize:opt.inputSize[2], scoreThreshold:opt.score.show1})},
     api:'https://aip.baidubce.com/rest/2.0/face/v3/',
-    at:'?access_token=24.cc49ba595030f0a677fd9d1dd8153386.2592000.1609907365.282335-23103930',
+    at:'?access_token=24.82354497b143b6dddc1de41cdf00c52a.2592000.1611802380.282335-23103930',
     url:mode=>{return opt.api + opt.mode[mode] + opt.at},
     type:'BASE64',
     group:'TEST',
