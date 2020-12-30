@@ -11,4 +11,13 @@ export const enhance = {
     del_mate:function(id){
         this.socket.send(JSON.stringify({eventName:"del_mate",data:id}))
     },
+    db_write:function(msg) {
+        this.socket.send(JSON.stringify({eventName:"db_write",data:msg}))
+    },
+    db_read:function(a, b) {
+        this.socket.send(JSON.stringify({eventName:"db_read",data:a}))
+    },
+    db_init:function() {
+        this.socket.send(JSON.stringify({eventName:"db_init",data:''}))
+    }
 }

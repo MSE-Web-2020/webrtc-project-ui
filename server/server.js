@@ -1,10 +1,13 @@
-const path = require("path")
-const fs = require('fs')
+global.path = require("path")
+global.fs = require('fs')
+const db = require('better-sqlite3')(path.join(__dirname, 'message.db').toString(), {verbose: null})
 const ws = require('ws').Server
+const express = require('express')
+const app = express()
 const server = require('https').createServer({
     key:fs.readFileSync(path.join(__dirname,'../ssl.key')),
     cert:fs.readFileSync(path.join(__dirname,'../ssl.crt'))
-})
+},app)
 const host = '0.0.0.0'
 const port = 443
 
@@ -104,5 +107,36 @@ WebRTC.prototype.init = function (socket) {
     that.emit('new_connect', socket);
 };
 
-require('./enhance').listen(new ws({server: server}), WebRTC, errorCb)
+require('./enhance').listen(new ws({server: server}), WebRTC, errorCb, db)
 server.listen(port, host)
+
+app.get('/webrtc/login',(req, res)=>{
+    let mode = req.query.mode
+    let user = req.query.user
+    let room = req.query.room || '__default'
+    let result
+    res.header("Access-Control-Allow-Origin", "*")
+    switch(mode){
+        case 'login':
+            result = db.prepare(`REPLACE INTO user (user,room) VALUES (?,?)`).run(user, room)
+            db.prepare(`create table if not exists ${room}(
+                "id" integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "user" text(32) NOT NULL,
+                "msg" text(32) NOT NULL)`).run();
+            res.send()
+            break
+        case 'create':
+            db.prepare(`REPLACE INTO user (user,room) VALUES (?,?)`).run(user, room)
+            res.send()
+            break
+        case 'query':
+            result = db.prepare(`SELECT * FROM user where user = ?`).get(user)
+            res.send(JSON.stringify(result))
+            break
+        default:
+            res.send()
+            break
+    }
+})
+
+

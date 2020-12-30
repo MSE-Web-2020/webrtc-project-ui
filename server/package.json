@@ -6,6 +6,8 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
-		"ws": ">= 0.0.0"
+		"ws": ">= 0.0.0",
+		"better-sqlite3": ">= 0.0.0",
+		"express": ">= 0.0.0"
 	}
 }

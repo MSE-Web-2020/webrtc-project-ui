@@ -51,7 +51,11 @@ $('#onff').click(()=>{
 $('#login').click(()=>{
 	if(username){
 		if(!$('#roomname').val()&&!confirm('尚未填写房间号，即将进入公共房间，是否进入？')) return false
-		window.location.href=`/?username=${username}#${$('#roomname').val()}`
+		if($('#roomname').val()=='user'){alert('房间号不能为 user');return false}
+		$.get(`https://localhost/webrtc/login?mode=login&user=${username}&room=${$('#roomname').val()}`,()=>{
+		// $.get(`https://april8.xyz/webrtc/login?mode=login&user=${username}&room=${$('#roomname').val()}`,()=>{
+			window.location.href=`/?username=${username}#${$('#roomname').val()}`
+		})
 	}else alert('尚未验证')
 })
 $('#register').click(()=>{

@@ -139,18 +139,13 @@ export default function Chat() {
   const [fileList, setFileList] = useState([]);
 
   useEffect(() => {
-    if (!getQueryString('username')) {
-      login();
-    }
+    if (!getQueryString('username')) login();
     let url = new URL(window.location.href), port = '443';
-    rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
-    // rtc.connect(`wss://april8.xyz${url.search}`, url.hash);
+    // rtc.connect(`wss:${url.hostname}:${port}${url.search}`, url.hash);
+    rtc.connect(`wss://april8.xyz${url.search}`, url.hash);
     rtc.on('connected', () => {
       console.log('websocket connected');
       rtc.createStream({ 'video': true, 'audio': true });
-    });
-    rtc.on('not_login', () => {
-      login();
     });
     rtc.on('stream_created', stream => {
       myVideoRef.current.srcObject = stream;
@@ -169,13 +164,20 @@ export default function Chat() {
       console.log('channel', channel);
       console.log('socketId', socketId);
       console.log('message', message);
-      setMsg(`${msg}\n${socketId}: ${message}`);
+      setMsg(`${socketId}: ${message}\n${msg}`);
     });
+    rtc.on('init_message', message => {
+      if(message === false){
+        login()
+      }else{
+        setMsg(`${message}`);
+      }
+    })
     rtc.on('one_mate', message => alert(`来自 ${message.src} 的私信：\n${message.data}`));
     rtc.on('all_mate', message => {
       switch (message.mode) {
         case 'text':
-          setMsg(`${msg}\n房间推送信息: ${message.data}`);
+          setMsg(`房间推送信息: ${message.data}\n${msg}`);
           break;
         case 'effect':
           break;
@@ -189,7 +191,7 @@ export default function Chat() {
     rtc.on('all_room', message => {
       switch (message.mode) {
         case 'text':
-          setMsg(`${msg}\n系统推送信息: ${message.data}`);
+          setMsg(`系统推送信息: ${message.data}\n${msg}`);
           break;
         case 'effect':
           break;
@@ -203,15 +205,14 @@ export default function Chat() {
     rtc.on('pc_add_stream', (stream, socketId) => {
       for (let i of [2, 3, 4]) {
         let video = eval(`videoRef${i}.current`);
-        if (video && !!!video.srcObject) {
+        if (video && !video.srcObject) {
           video.srcObject = stream;
           let vp = video.play();
-          if (vp !== undefined) vp.then(() => video.play()).catch(() => {
-          });
+          if (vp !== undefined) vp.then(() => video.play()).catch(() => {});
           video.volume = 0.0;
           refUseMap[socketId] = `videoRef${i}`;
-          break;
         }
+          break;
       }
     });
     rtc.on('remove_peer', socketId => {
@@ -1055,6 +1056,11 @@ const download = blob => {
     }
   }
 
+  const dbExc = e => {
+    rtc.db_init()
+    setMsg('')
+  }
+
   const menu = (
     <Menu>
       <Menu.Item key="5" onClick={() => msgSend(1)}>向用户名为a的用户发送私信</Menu.Item>
@@ -1137,16 +1143,17 @@ const download = blob => {
                       size="middle"
                       value={myInput}
                       onChange={e => {
-                        console.log('Input box value update', e.target.value);
+                        // console.log('Input box value update', e.target.value);
                         setMyInput(e.target.value);
                       }}
                       onSearch={value => {
                         if (value === '') {
                           return;
                         }
-                        setMsg(msg + '\nme:' + value);
+                        setMsg(`me: ${value}\n${msg}`);
                         rtc.broadcast(value);
-                        console.log('msg sent', value);
+                        rtc.db_write(value)
+                        // console.log('msg sent', value);
                         setMyInput('');
                       }}
                     />
@@ -1169,7 +1176,11 @@ const download = blob => {
                       </Row>
                       <Row>
                     <Col span={12}><Button onClick={() => drawFun(true)}>初始化画板</Button></Col>
-                    <Col span={12}><Button onClick={()=> drawFun(false)}>移除画板</Button></Col>
+                    <Col span={12}><Button onClick={() => drawFun(false)}>移除画板</Button></Col>
+                      </Row>
+                      <Row>
+                    <Col span={12}><Button onClick={() => dbExc()}>清空聊天记录</Button></Col>
+                    <Col span={12}><Button onClick={() => {}}>DBtest</Button></Col>
                       </Row>
                       <Row>
                     <Col span={12}><Button onClick={() => stream_change(true)}>共享桌面</Button></Col>

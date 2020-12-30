@@ -8,55 +8,46 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from time import sleep
 
-class TestVideorecord():
-  def setup_method(self, method):
-    self.driver = webdriver.Chrome()
-    self.vars = {}
-  
-  def teardown_method(self, method):
-    self.driver.quit()
-  
-  def test_videorecord(self):
-    # 视频录制
-    # 1 | 打开主页
-    self.driver.get("https://localhost:3030/?username=herrshen#")
-    # 2 | 最大化窗口
-    self.driver.set_window_size(1565, 847)
-    # 3 | 共享摄像头
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(5) > .ant-col:nth-child(1) span").click()
-    # 4 | 开始录制
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(7) > .ant-col:nth-child(1) span").click()
-    # 5 | 录制10秒
-    sleep(10)
-    # 6 | 结束录制
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-btn-dashed > span:nth-child(2)").click()
-    # 7 | 预览视频
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(8) > .ant-col:nth-child(2) span").click()
-    # 8 | 保存录制
-    element = self.driver.find_element(By.CSS_SELECTOR, ".ant-col-12 > .ant-dropdown-trigger > span:nth-child(1)")
-    actions = ActionChains(self.driver)
-    actions.move_to_element(element).perform()
-    # 9 |
-    element = self.driver.find_element(By.CSS_SELECTOR, "body")
-    actions = ActionChains(self.driver)
-    actions.move_to_element(element, 0, 0).perform()
-    # 10 | 共享桌面
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(4) > .ant-col:nth-child(2) span").click()
-    # 11 | 切换视频录制按钮
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(6) span").click()
-    # 12 | 开始录制
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(7) > .ant-col:nth-child(1) span").click()
-    # 13| 录制10秒
-    sleep(10)
-    # 14 | 结束录制
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-btn-dashed > span:nth-child(2)").click()
-    # 15 | 切换预览视频按钮
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(8) > .ant-col:nth-child(1) span").click()
-    # 16 | 预览视频
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(8) > .ant-col:nth-child(2) span").click()
-    # 17 | 切换预览视频按钮
-    self.driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(8) > .ant-col:nth-child(1) span").click()
-    # 18 | 应弹出 ”无可预览的存储视频文件！“的报错
-    assert self.driver.switch_to.alert.text == "无可预览的存储视频文件！"
+# 视频录制模块(当只有一个人时）
+driver=webdriver.Chrome()
+driver.get("https://webrtc.april8.xyz/?username=herrshen#")
+time.sleep(5)
+driver.set_window_size(1565, 847)
+# 共享摄像头
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(4) > .ant-col:nth-child(2) span").click()
+# 开始录制
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(6) > .ant-col:nth-child(1) > .ant-btn").click()
+# 录制10秒
+time.sleep(10)
+# 结束录制
+driver.find_element(By.CSS_SELECTOR, ".ant-btn-dashed > span:nth-child(2)").click()
+# 预览视频
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(7) > .ant-col:nth-child(2) span").click()
+time.sleep(10)
+# 保存录制
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(6) > .ant-col:nth-child(2) span").click()
+'''
+element = driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(6) > .ant-col:nth-child(2) span")
+actions = ActionChains(driver)
+actions.move_to_element(element).perform()
+element = driver.find_element(By.CSS_SELECTOR, "body")
+actions = ActionChains(driver)
+actions.move_to_element(element, 0, 0).perform()
+driver.find_element(By.CSS_SELECTOR, ".ant-btn-primary:nth-child(2) > span").click()
+'''
+time.sleep(5)
+# 切换视频录制按钮
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(5) span").click()
+# 开始录制
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(6) > .ant-col:nth-child(1) span").click()
+# 报错"没有视频信息"
+assert driver.switch_to.alert.text == "没有视频信息"
+time.sleep(5)
+# 切换预览视频按钮
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(7) > .ant-col:nth-child(1) > .ant-btn").click()
+# 预览视频
+driver.find_element(By.CSS_SELECTOR, ".ant-row:nth-child(7) > .ant-col:nth-child(2) span").click()
+# 报错""无可预览的存储视频文件！
+assert driver.switch_to.alert.text == "无可预览的存储视频文件！"
+time.sleep(5)
